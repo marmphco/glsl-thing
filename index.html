@@ -1,11 +1,25 @@
 <html>
    <head>
       <title>GLSL Creator Test</title>
+      <script id="test-vertex-shader" type="x-shader/x-vertex" src="default.vsh">
+attribute vec4 iPosition;
+
+void main(void) {
+   gl_Position = iPosition;
+}
+</script>
+      <script id="test-fragment-shader" type="x-shader/x-fragment" src="default.fsh">
+varying lowp vec4 vPosition;
+
+void main(void) {
+   gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+}
+</script>
       <script type="text/javascript" src="glsl-creator.js"></script>
    </head>
    <body>
       <h1>GLSL Creator Test</h1>
-      <canvas id="canvas">It don't load right!</canvas>
+      <canvas id="canvas" width="640" height="480">It don't load right!</canvas>
       <script type="text/javascript">
           var canvas = document.getElementById("canvas");
           var context = new GLSLCreator.Context(canvas);
