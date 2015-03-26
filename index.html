@@ -2,19 +2,19 @@
    <head>
       <title>GLSL Creator Test</title>
       <script id="test-vertex-shader" type="x-shader/x-vertex" src="default.vsh">
-attribute vec4 iPosition;
+        attribute vec4 iPosition;
 
-void main(void) {
-   gl_Position = iPosition;
-}
-</script>
+        void main(void) {
+           gl_Position = iPosition;
+        }
+      </script>
       <script id="test-fragment-shader" type="x-shader/x-fragment" src="default.fsh">
-varying lowp vec4 vPosition;
+        varying lowp vec4 vPosition;
 
-void main(void) {
-   gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-}
-</script>
+        void main(void) {
+           gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        }
+      </script>
       <script type="text/javascript" src="glsl-creator.js"></script>
    </head>
    <body>
@@ -23,6 +23,21 @@ void main(void) {
       <script type="text/javascript">
           var canvas = document.getElementById("canvas");
           var context = new GLSLCreator.Context(canvas);
+
+          var outPort = new GLSLCreator.Node();
+          outPort.addOutputPort(new GLSLCreator.OutputPort(outPort, "carp", GLSLCreator.PortType.Number));
+          outPort.addOutputPort(new GLSLCreator.OutputPort(outPort, "poiu", GLSLCreator.PortType.Number));
+
+          var inPort = new GLSLCreator.Node();
+          inPort.addInputPort(new GLSLCreator.InputPort(inPort, "inder", GLSLCreator.PortType.Number));
+          inPort.addInputPort(new GLSLCreator.InputPort(inPort, "fsda", GLSLCreator.PortType.Number));
+
+          inPort.inputPorts()[0].bindTo(outPort.outputPorts()[0]);
+          inPort.inputPorts()[1].bindTo(outPort.outputPorts()[0]);
+
+          console.log("change to 5");
+          outPort.outputPorts()[0].exportValue(5);
+
       </script>
    </body>
 </html>
