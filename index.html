@@ -2,19 +2,25 @@
    <head>
       <title>GLSL Creator Test</title>
       <script id="test-vertex-shader" type="x-shader/x-vertex" src="default.vsh">
-      attribute vec4 iPosition;
-      attribute vec4 iNormal;
+      attribute lowp vec4 iPosition;
+      attribute lowp vec4 iNormal;
+
+      varying lowp vec4 vPosition;
 
         void main(void) {
            vec4 x = iNormal;
+           vPosition = iPosition;
            gl_Position = iPosition;
         }
       </script>
       <script id="test-fragment-shader" type="x-shader/x-fragment" src="default.fsh">
         varying lowp vec4 vPosition;
+        uniform sampler2D texture0;
+        uniform int test;
 
         void main(void) {
-           gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+           int x = test;
+           gl_FragColor = vec4(vPosition.xyz, 1.0) + texture2D(texture0, vPosition.xy);
         }
       </script>
       <script type="text/javascript" src="glsl-creator.js"></script>
@@ -22,6 +28,8 @@
    <body>
       <h1>GLSL Creator Test</h1>
       <canvas id="canvas" width="640" height="480">It don't load right!</canvas>
+      <img id="pusheen" src="pusheen.png" onload="loaded()">
+
       <script type="text/javascript">
          var canvas = document.getElementById("canvas");
          var context = new GLSLCreator.Context(canvas);
@@ -35,12 +43,12 @@
 
          var vshNode = new GLSLCreator.ShaderNode(gl, gl.VERTEX_SHADER);
          var fshNode = new GLSLCreator.ShaderNode(gl, gl.FRAGMENT_SHADER);
-         vshNode.inputPorts()[0].bindTo(vshSourceNode.outputPorts()[0]);
-         fshNode.inputPorts()[0].bindTo(fshSourceNode.outputPorts()[0]);
+         vshNode.inputPort("source").bindTo(vshSourceNode.outputPort("value"));
+         fshNode.inputPort("source").bindTo(fshSourceNode.outputPort("value"));
 
          var programNode = new GLSLCreator.ProgramNode(gl);
-         programNode.inputPorts()[0].bindTo(vshNode.outputPorts()[0]);
-         programNode.inputPorts()[1].bindTo(fshNode.outputPorts()[0]);
+         programNode.inputPort("vertexShader").bindTo(vshNode.outputPort("shader"));
+         programNode.inputPort("fragmentShader").bindTo(fshNode.outputPort("shader"));
 
          var vertices = new Float32Array([
             0.0, 0.0, 0.0,
@@ -53,12 +61,20 @@
          var meshNode = new GLSLCreator.MeshNode(gl, vertices, indices, gl.TRIANGLE_STRIP);
 
          var renderNode = new GLSLCreator.RenderNode(gl);
-         renderNode.inputPorts()[0].bindTo(meshNode.outputPorts()[0]);
-         renderNode.inputPorts()[1].bindTo(programNode.outputPorts()[0]);
+         renderNode.inputPort("mesh").bindTo(meshNode.outputPort("mesh"));
+         renderNode.inputPort("program").bindTo(programNode.outputPort("program"));
 
          vshSourceNode.setValue(vertexSource);
          fshSourceNode.setValue(fragmentSource);
 
+         function loaded() {
+            setTimeout(function() {
+               console.log("IT LOADED");
+               var imageNode = new GLSLCreator.ImageNode(gl);
+               renderNode.inputPort("texture0").bindTo(imageNode.outputPort("texture"));
+               imageNode.setImageData(document.getElementById("pusheen"));
+            }, 0);
+         }
       </script>
    </body>
 </html>
