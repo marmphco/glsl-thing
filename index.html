@@ -16,11 +16,10 @@
       <script id="test-fragment-shader" type="x-shader/x-fragment" src="default.fsh">
         varying lowp vec4 vPosition;
         uniform sampler2D texture0;
-        uniform int test;
+        uniform lowp float test;
 
         void main(void) {
-           int x = test;
-           gl_FragColor = vec4(vPosition.xyz, 1.0) + texture2D(texture0, vPosition.xy);
+           gl_FragColor = vec4(vPosition.xyz, 1.0) + test * texture2D(texture0, vPosition.xy);
         }
       </script>
       <script type="text/javascript" src="glsl-creator.js"></script>
@@ -69,10 +68,14 @@
 
          function loaded() {
             setTimeout(function() {
-               console.log("IT LOADED");
+               console.log("IMAGE LOADED");
                var imageNode = new GLSLCreator.ImageNode(gl);
                renderNode.inputPort("texture0").bindTo(imageNode.outputPort("texture"));
                imageNode.setImageData(document.getElementById("pusheen"));
+
+               var testNode = new GLSLCreator.ValueNode(gl.FLOAT);
+               renderNode.inputPort("test").bindTo(testNode.outputPort("value"));
+               testNode.setValue(0.5);
             }, 0);
          }
       </script>

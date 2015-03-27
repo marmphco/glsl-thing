@@ -26,27 +26,6 @@ var GLSLCreator = (function(exports) {
       var gl = this.gl = element.getContext("webgl");
    }
 
-   /*
-
-   gl.FLOAT,
-gl.FLOAT_VEC2,
-gl.FLOAT_VEC3,
-gl.FLOAT_VEC4,
-gl.FLOAT_MAT2,
-gl.FLOAT_MAT3,
-gl.FLOAT_MAT3,
-gl.FLOAT_MAT4,
-gl.INT,
-gl.INT_VEC2,
-gl.INT_VEC3,
-gl.INT_VEC4,
-gl.BOOL,
-gl.BOOL_VEC2,
-gl.BOOL_VEC3,
-gl.BOOL_VEC4,
-gl.SAMPLER_2D
-gl.SAMPLER_CUBE
-   */
 
    /* Mesh */
    var Mesh = function(gl, vertices, indices, drawMode) {
@@ -367,22 +346,21 @@ gl.SAMPLER_CUBE
 
             // merge ports
             if (self._uniformPorts.hasOwnProperty(uniform.name)) {
-               console.log("reuse port " + uniform.name)
                ports[uniform.name] = self._uniformPorts[uniform.name];
                ports[uniform.name].setType(uniform.type);
             }
             else {
-               console.log("new port " + uniform.name);
                ports[uniform.name] = new InputPort(self, uniform.type);
             }
+         }
 
-            // clean up unused ports
-            for (var portName in self._uniformPorts) {
-               if (!ports.hasOwnProperty(portName)) {
-                  self._uniformPorts[portName].unbind();
-               }
+         // clean up unused ports
+         for (var portName in self._uniformPorts) {
+            if (!ports.hasOwnProperty(portName)) {
+               self._uniformPorts[portName].unbind();
             }
          }
+
          return ports;
       }
 
@@ -406,13 +384,8 @@ gl.SAMPLER_CUBE
             var port = this._uniformPorts[name];
             var functionId = "uniform" + uniformSuffix(port.type());
             var uniformFunc = gl[functionId];
-            // wont work for matrices and stuff
-            console.log(this._uniformPorts);
-            console.log(name)
-            console.log(port)
-            console.log(port.value())
-            console.log(uniformFunc);
 
+            // wont work for matrices and stuff
             if (port.type() == gl.SAMPLER_2D) {
                uniformFunc.apply(gl, [loc, textureUnit]);
 
