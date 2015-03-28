@@ -3,12 +3,26 @@ module.exports = function(grunt) {
       pkg: grunt.file.readJSON('package.json'),
       concat: {
          build: {
-            src: ['src/*.js'],
+            src: [
+               'src/gt-port.js',
+               'src/gt-mesh.js',
+               'src/gt-node.js',
+               'src/gt-value-node.js',
+               'src/gt-image-node.js',
+               'src/gt-mesh-node.js',
+               'src/gt-shader-node.js',
+               'src/gt-program-node.js',
+               'src/gt-render-node.js',
+               'src/glsl-creator.js',
+            ],
             dest: 'build/<%= pkg.name %>.min.js'
          }
       },
       uglify: {
-         options: {},
+         options: {
+            mangle: true,
+            compress: true
+         },
          build: {
             src: 'build/<%= pkg.name %>.min.js',
             dest: 'build/<%= pkg.name %>.min.js'
