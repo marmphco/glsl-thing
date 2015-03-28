@@ -86,38 +86,7 @@ var GLSLCreator = (function(exports) {
 
       return gl.canvas.toDataURL();
    }
-
-   /*
-      Janky
-   */
-   var imageWithTexture = function(gl, texture, width, height) {
-
-      var framebuffer = gl.createFramebuffer();
-      gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
-      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
-
-      var pixelData = new Uint8Array(width * height * 4);
-      gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixelData);
-
-      var canvas = document.createElement('canvas');
-      document.getElementsByTagName("body")[0].appendChild(canvas);
-      canvas.width = width;
-      canvas.height = height;
-      var context = canvas.getContext("2d");
-
-      var imageData = context.createImageData(canvas.width, canvas.height);
-      imageData.data.set(pixelData);
-      context.putImageData(imageData, 0, 0);
-
-      var image = new Image();
-      image.src = canvas.toDataURL();
-
-      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-      gl.deleteFramebuffer(framebuffer);
-
-      return image;
-   }
-
+   
    var Context = function(element) {
       var gl = this.gl = element.getContext("webgl", {
          preserveDrawingBuffer: true
