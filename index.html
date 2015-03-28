@@ -72,10 +72,18 @@
                var imageNode = new GLSLCreator.ImageNode(gl);
                renderNode.inputPort("texture0").bindTo(imageNode.outputPort("texture"));
                imageNode.setImageData(document.getElementById("pusheen"));
+               testImage = imageNode.outputPort("texture").value();
+               setTimeout(function() {
+
+               }, 0);
 
                var testNode = new GLSLCreator.ValueNode(gl.FLOAT);
                renderNode.inputPort("test").bindTo(testNode.outputPort("value"));
                testNode.setValue(0.5);
+
+               test = new Image();
+               test.src = GLSLCreator.dataURLWithTexture(gl, testImage);
+               document.getElementsByTagName("body")[0].appendChild(test);
             }, 0);
          }
       </script>

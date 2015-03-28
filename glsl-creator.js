@@ -1,6 +1,6 @@
 var GLSLCreator = (function(exports) {
 
-   var uniformSuffix = function(type) {
+   var uniformSuffix = function(gl, type) {
       switch (type) {
          case gl.FLOAT:      return "1f";
          case gl.FLOAT_VEC2: return "2f";
@@ -22,10 +22,107 @@ var GLSLCreator = (function(exports) {
       }
    }
 
-   var Context = function(element) {
-      var gl = this.gl = element.getContext("webgl");
+   /*
+      Renders @texture to the draw buffer, then uses
+      toDataURL() to extract the dataURL.
+
+      Really slow, creates and destroys buffers and
+      shaders during each execution.
+   */
+   var dataURLWithTexture = function(gl, texture) {
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+      var quad = new Mesh(gl, new Float32Array([
+         -1.0, -1.0,
+          1.0, -1.0,
+         -1.0,  1.0,
+          1.0,  1.0
+      ]), new Int16Array([0, 1, 2, 3]), gl.TRIANGLE_STRIP);
+
+      var vShader = gl.createShader(gl.VERTEX_SHADER);
+      gl.shaderSource(vShader, "\
+         attribute lowp vec2 iPos;\
+         varying lowp vec2 vTexCoord;\
+         void main(void) {\
+            gl_Position = vec4(iPos, 0.0, 1.0);\
+            vTexCoord = (iPos + vec2(1.0)) * 0.5;\
+         }");
+      gl.compileShader(vShader);
+
+      var fShader = gl.createShader(gl.FRAGMENT_SHADER);
+      gl.shaderSource(fShader, "\
+         varying lowp vec2 vTexCoord;\
+         uniform sampler2D tex;\
+         void main(void) {\
+            gl_FragColor = texture2D(tex, vTexCoord);\
+         }");
+      gl.compileShader(fShader);
+
+      var program = gl.createProgram();
+      gl.attachShader(program, vShader);
+      gl.attachShader(program, fShader);
+      gl.linkProgram(program);
+
+      gl.useProgram(program);
+      quad.use();
+
+      var positionLoc = gl.getAttribLocation(program, "iPos");
+      gl.enableVertexAttribArray(positionLoc);
+      gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 8, 0);
+
+      var textureLoc = gl.getUniformLocation(program, "uTex");
+      gl.uniform1i(textureLoc, 0);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+
+      quad.draw();
+
+      gl.deleteShader(vShader);
+      gl.deleteShader(fShader);
+      gl.deleteProgram(program);
+      quad.delete();
+
+      gl.disableVertexAttribArray(positionLoc);
+
+      return gl.canvas.toDataURL();
    }
 
+   /*
+      Janky
+   */
+   var imageWithTexture = function(gl, texture, width, height) {
+
+      var framebuffer = gl.createFramebuffer();
+      gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+
+      var pixelData = new Uint8Array(width * height * 4);
+      gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixelData);
+
+      var canvas = document.createElement('canvas');
+      document.getElementsByTagName("body")[0].appendChild(canvas);
+      canvas.width = width;
+      canvas.height = height;
+      var context = canvas.getContext("2d");
+
+      var imageData = context.createImageData(canvas.width, canvas.height);
+      imageData.data.set(pixelData);
+      context.putImageData(imageData, 0, 0);
+
+      var image = new Image();
+      image.src = canvas.toDataURL();
+
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      gl.deleteFramebuffer(framebuffer);
+
+      return image;
+   }
+
+   var Context = function(element) {
+      var gl = this.gl = element.getContext("webgl", {
+         preserveDrawingBuffer: true
+      });
+   }
 
    /* Mesh */
    var Mesh = function(gl, vertices, indices, drawMode) {
@@ -221,7 +318,6 @@ var GLSLCreator = (function(exports) {
 
       var _texture = gl.createTexture(); // needs to be cleaned up
       this.setImageData = function(imageData) {
-         gl.activeTexture(gl.TEXTURE0);
          gl.bindTexture(gl.TEXTURE_2D, _texture);
          gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imageData);
          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -340,10 +436,6 @@ var GLSLCreator = (function(exports) {
          for (var loc = 0; loc < uniformCount; loc++) {
             var uniform = gl.getActiveUniform(program, loc);
 
-            // doesn't cover all the bases
-            // see https://www.opengl.org/sdk/docs/man/html/glGetActiveUniform.xhtml
-            // for full list
-
             // merge ports
             if (self._uniformPorts.hasOwnProperty(uniform.name)) {
                ports[uniform.name] = self._uniformPorts[uniform.name];
@@ -382,7 +474,7 @@ var GLSLCreator = (function(exports) {
          for (var name in this._uniformPorts) {
             var loc = gl.getUniformLocation(program, name);
             var port = this._uniformPorts[name];
-            var functionId = "uniform" + uniformSuffix(port.type());
+            var functionId = "uniform" + uniformSuffix(gl, port.type());
             var uniformFunc = gl[functionId];
 
             // wont work for matrices and stuff
@@ -408,6 +500,7 @@ var GLSLCreator = (function(exports) {
 
          mesh.draw();
 
+         gl.disableVertexAttribArray(positionLoc);
       }
    }
    RenderNode.prototype = new Node();
@@ -423,7 +516,8 @@ var GLSLCreator = (function(exports) {
       "MeshNode": MeshNode,
       "ShaderNode": ShaderNode,
       "ProgramNode": ProgramNode,
-      "RenderNode": RenderNode
+      "RenderNode": RenderNode,
+      "dataURLWithTexture": dataURLWithTexture
    };
 
 })(GLSLCreator || {});
