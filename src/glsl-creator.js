@@ -86,7 +86,7 @@ var GLSLCreator = (function(exports) {
 
       return gl.canvas.toDataURL();
    }
-   
+
    var Context = function(element) {
       var gl = this.gl = element.getContext("webgl", {
          preserveDrawingBuffer: true
