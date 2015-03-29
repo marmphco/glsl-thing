@@ -1,8 +1,8 @@
 {
-  "name": "glsl-creator",
+  "name": "glsl-thing",
   "version": "0.0.1",
   "description": "A fun toy for playing with GLSL",
-  "main": "glsl-creator.js",
+  "main": "glsl-thing.js",
   "scripts": {
     "test": "not yet"
   },

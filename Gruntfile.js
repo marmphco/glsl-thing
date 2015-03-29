@@ -13,7 +13,7 @@ module.exports = function(grunt) {
                'src/gt-shader-node.js',
                'src/gt-program-node.js',
                'src/gt-render-node.js',
-               'src/glsl-creator.js',
+               'src/glsl-thing.js',
             ],
             dest: 'build/<%= pkg.name %>.min.js'
          }

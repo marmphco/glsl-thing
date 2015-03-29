@@ -1,4 +1,4 @@
-var GLSLCreator = (function(gt) {
+var GLSLThing = (function(gt) {
 
    /* ShaderNode */
 
@@ -33,4 +33,4 @@ var GLSLCreator = (function(gt) {
    gt.ShaderNode = ShaderNode;
    return gt;
 
-})(GLSLCreator || {});
+})(GLSLThing || {});

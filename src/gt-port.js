@@ -1,4 +1,4 @@
-var GLSLCreator = (function(gt) {
+var GLSLThing = (function(gt) {
 
    /* PortTypes that have no OpenGL analog */
    var PortType = {
@@ -114,4 +114,4 @@ var GLSLCreator = (function(gt) {
    gt.OutputPort = OutputPort;
    return gt;
 
-})(GLSLCreator || {});
+})(GLSLThing || {});

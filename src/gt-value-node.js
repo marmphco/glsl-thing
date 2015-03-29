@@ -1,4 +1,4 @@
-var GLSLCreator = (function(gt) {
+var GLSLThing = (function(gt) {
 
    /* ValueNode */
 
@@ -22,4 +22,4 @@ var GLSLCreator = (function(gt) {
    gt.ValueNode = ValueNode;
    return gt;
 
-})(GLSLCreator || {});
+})(GLSLThing || {});

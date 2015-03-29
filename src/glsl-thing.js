@@ -1,4 +1,4 @@
-var GLSLCreator = (function(gt) {
+var GLSLThing = (function(gt) {
 
    /*
       Renders @texture to the draw buffer, then uses
@@ -75,4 +75,4 @@ var GLSLCreator = (function(gt) {
    gt.dataURLWithTexture = dataURLWithTexture;
    return gt;
 
-})(GLSLCreator || {});
+})(GLSLThing || {});

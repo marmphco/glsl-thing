@@ -1,4 +1,4 @@
-var GLSLCreator = (function(gt) {
+var GLSLThing = (function(gt) {
 
    var uniformSuffix = function(gl, type) {
       switch (type) {
@@ -187,4 +187,4 @@ var GLSLCreator = (function(gt) {
    gt.RenderNode = RenderNode;
    return gt;
 
-})(GLSLCreator || {});
+})(GLSLThing || {});

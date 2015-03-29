@@ -1,4 +1,4 @@
-var GLSLCreator = (function(gt) {
+var GLSLThing = (function(gt) {
 
    /* Mesh */
    var Mesh = function(gl, vertices, indices, drawMode) {
@@ -31,4 +31,4 @@ var GLSLCreator = (function(gt) {
    gt.Mesh = Mesh;
    return gt;
 
-})(GLSLCreator || {});
+})(GLSLThing || {});
