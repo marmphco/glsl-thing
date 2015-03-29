@@ -21,7 +21,8 @@ module.exports = function(grunt) {
       uglify: {
          options: {
             mangle: true,
-            compress: true
+            compress: true,
+            sourceMap: true
          },
          build: {
             src: 'build/<%= pkg.name %>.min.js',
@@ -33,5 +34,5 @@ module.exports = function(grunt) {
    grunt.loadNpmTasks('grunt-contrib-uglify');
    grunt.loadNpmTasks('grunt-contrib-concat');
 
-   grunt.registerTask('default', ['concat']);
+   grunt.registerTask('default', ['concat', 'uglify']);
 };
