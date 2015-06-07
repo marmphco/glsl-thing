@@ -13,17 +13,27 @@ module.exports = function(grunt) {
          }
       },
       browserify: {
+         options: {
+            transform: [require('grunt-react').browserify]
+         },
          build: {
             src: [
                'src/demo.js',
             ],
             dest: 'build/<%= pkg.name %>.min.js'
          }
+      },
+      react: {
+         files: {
+            src: ["src/ui/*.jsx"]
+         }
       }
    });
 
    grunt.loadNpmTasks('grunt-contrib-uglify');
    grunt.loadNpmTasks('grunt-browserify');
+   grunt.loadNpmTasks('grunt-react');
 
-   grunt.registerTask('default', ['browserify', 'uglify']);
+   grunt.registerTask('full', ['browserify', 'uglify']);
+   grunt.registerTask('default', ['browserify']);
 };

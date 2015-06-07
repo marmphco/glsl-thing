@@ -1,4 +1,7 @@
-var GLSLThing = require("./glsl-thing.js");
+var GLSLThing = require("./lib/glsl-thing.js");
+var React = require("React");
+var Node = require("./ui/gt-node.jsx")
+var GLSLNode = require("./ui/gt-glslnode.jsx")
 
 window.onload = function() {
 
@@ -48,21 +51,26 @@ window.onload = function() {
    renderNode.inputPort("mesh").bindTo(meshNode.outputPort("mesh"));
    renderNode.inputPort("program").bindTo(programNode.outputPort("program"));
 
-   //document.getElementById("pusheen").onload = function() {
-      setTimeout(function() {
-         console.log("IMAGE LOADED");
-         var imageNode = new GLSLThing.ImageNode(gl);
-         renderNode.inputPort("texture0").bindTo(imageNode.outputPort("texture"));
-         imageNode.setImageData(document.getElementById("pusheen"));
-         testImage = imageNode.outputPort("texture").value();
+   React.render(
+      <div>
+         <Node node={vshSourceNode} derp="herp" />
+         <GLSLNode node={fshSourceNode} derp="herp" updateText={function(newText) {
+            fshSourceNode.setValue(newText);
+         }} />
+      </div>,
+         document.getElementById("react-thing")
+   )
 
-         var testNode = new GLSLThing.ValueNode(gl.FLOAT);
-         renderNode.inputPort("test").bindTo(testNode.outputPort("value"));
-         testNode.setValue(0.5);
+   setTimeout(function() {
+      console.log("IMAGE LOADED");
+      var imageNode = new GLSLThing.ImageNode(gl);
+      renderNode.inputPort("texture0").bindTo(imageNode.outputPort("texture"));
+      imageNode.setImageData(document.getElementById("pusheen"));
+      testImage = imageNode.outputPort("texture").value();
 
-         test = new Image();
-         test.src = GLSLThing.dataURLWithTexture(gl, testImage);
-         document.getElementsByTagName("body")[0].appendChild(test);
-      }, 0);
-   //}
+      var testNode = new GLSLThing.ValueNode(gl.FLOAT);
+      renderNode.inputPort("test").bindTo(testNode.outputPort("value"));
+      testNode.setValue(0.5);
+
+   }, 0);
 }
