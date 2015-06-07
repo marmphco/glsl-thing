@@ -27,65 +27,6 @@
    <body>
       <h1>GLSL Creator Test</h1>
       <canvas id="canvas" width="640" height="480">It don't load right!</canvas>
-      <img id="pusheen" src="pusheen.png" onload="loaded()">
-
-      <script type="text/javascript">
-         var canvas = document.getElementById("canvas");
-         var context = new GLSLThing.Context(canvas);
-
-         var gl = context.gl;
-         var vertexSource = document.getElementById("test-vertex-shader").firstChild.textContent;
-         var fragmentSource = document.getElementById("test-fragment-shader").firstChild.textContent;
-
-         var vshSourceNode = new GLSLThing.ValueNode(GLSLThing.PortType.String);
-         var fshSourceNode = new GLSLThing.ValueNode(GLSLThing.PortType.String);
-
-         var vshNode = new GLSLThing.ShaderNode(gl, gl.VERTEX_SHADER);
-         var fshNode = new GLSLThing.ShaderNode(gl, gl.FRAGMENT_SHADER);
-         vshNode.inputPort("source").bindTo(vshSourceNode.outputPort("value"));
-         fshNode.inputPort("source").bindTo(fshSourceNode.outputPort("value"));
-
-         var programNode = new GLSLThing.ProgramNode(gl);
-         programNode.inputPort("vertexShader").bindTo(vshNode.outputPort("shader"));
-         programNode.inputPort("fragmentShader").bindTo(fshNode.outputPort("shader"));
-
-         var vertices = new Float32Array([
-            0.0, 0.0, 0.0,
-            1.0, 0.0, 0.0,
-            0.0, 1.0, 0.0,
-            1.0, 1.0, 0.0
-         ]);
-         var indices = new Uint16Array([0, 1, 2, 3]);
-
-         var meshNode = new GLSLThing.MeshNode(gl, vertices, indices, gl.TRIANGLE_STRIP);
-
-         var renderNode = new GLSLThing.RenderNode(gl);
-         renderNode.inputPort("mesh").bindTo(meshNode.outputPort("mesh"));
-         renderNode.inputPort("program").bindTo(programNode.outputPort("program"));
-
-         vshSourceNode.setValue(vertexSource);
-         fshSourceNode.setValue(fragmentSource);
-
-         function loaded() {
-            setTimeout(function() {
-               console.log("IMAGE LOADED");
-               var imageNode = new GLSLThing.ImageNode(gl);
-               renderNode.inputPort("texture0").bindTo(imageNode.outputPort("texture"));
-               imageNode.setImageData(document.getElementById("pusheen"));
-               testImage = imageNode.outputPort("texture").value();
-               setTimeout(function() {
-
-               }, 0);
-
-               var testNode = new GLSLThing.ValueNode(gl.FLOAT);
-               renderNode.inputPort("test").bindTo(testNode.outputPort("value"));
-               testNode.setValue(0.5);
-
-               test = new Image();
-               test.src = GLSLThing.dataURLWithTexture(gl, testImage);
-               document.getElementsByTagName("body")[0].appendChild(test);
-            }, 0);
-         }
-      </script>
+      <img id="pusheen" src="pusheen.png" style="display: none;">
    </body>
 </html>

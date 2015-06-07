@@ -1,21 +1,29 @@
-var GLSLThing = (function(gt) {
+var Mesh = require('./gt-mesh.js');
 
-   /*
-      Renders @texture to the draw buffer, then uses
-      toDataURL() to extract the dataURL.
-
-      Really slow, creates and destroys buffers and
-      shaders during each execution.
-   */
-   var dataURLWithTexture = function(gl, texture) {
+module.exports = {
+   ImageNode: require("./gt-image-node.js"),
+   MeshNode: require("./gt-mesh-node.js"),
+   Mesh: require('./gt-mesh.js'),
+   Node: require('./gt-node.js'),
+   Port: require('./gt-port.js'),
+   ProgramNode: require('./gt-program-node.js'),
+   RenderNode: require('./gt-render-node.js'),
+   ShaderNode: require('./gt-shader-node.js'),
+   ValueNode: require('./gt-value-node.js'),
+   Context: function(element) {
+      var gl = this.gl = element.getContext("webgl", {
+         preserveDrawingBuffer: true
+      });
+   },
+   dataURLWithTexture: function(gl, texture) {
       gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-      var quad = new gt.Mesh(gl, new Float32Array([
+      var quad = new Mesh(gl, new Float32Array([
          -1.0, -1.0,
           1.0, -1.0,
          -1.0,  1.0,
           1.0,  1.0
-      ]), new Int16Array([0, 1, 2, 3]), gl.TRIANGLE_STRIP);
+      ]), new Uint16Array([0, 1, 2, 3]), gl.TRIANGLE_STRIP);
 
       var vShader = gl.createShader(gl.VERTEX_SHADER);
       gl.shaderSource(vShader, "\
@@ -64,15 +72,4 @@ var GLSLThing = (function(gt) {
 
       return gl.canvas.toDataURL();
    }
-
-   var Context = function(element) {
-      var gl = this.gl = element.getContext("webgl", {
-         preserveDrawingBuffer: true
-      });
-   }
-
-   gt.Context = Context;
-   gt.dataURLWithTexture = dataURLWithTexture;
-   return gt;
-
-})(GLSLThing || {});
+};

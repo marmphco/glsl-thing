@@ -1,25 +1,21 @@
-var GLSLThing = (function(gt) {
+var Node = require("./gt-node.js");
+var Port = require("./gt-port.js");
 
-   /* ValueNode */
+var ValueNode = function(type) {
+   var valuePort = new Port.OutputPort(this, type);
 
-   var ValueNode = function(type) {
-      var valuePort = new gt.OutputPort(this, type);
+   this._dirty = false;
+   this._inputPorts = {};
+   this._outputPorts = {
+      "value": valuePort
+   };
 
-      this._dirty = false;
-      this._inputPorts = {};
-      this._outputPorts = {
-         "value": valuePort
-      };
-
-      this.setValue = function(value) {
-         valuePort.exportValue(value);
-      }
-
-      this.evaluate = function() {}
+   this.setValue = function(value) {
+      valuePort.exportValue(value);
    }
-   ValueNode.prototype = new gt.Node();
 
-   gt.ValueNode = ValueNode;
-   return gt;
+   this.evaluate = function() {}
+}
+ValueNode.prototype = new Node();
 
-})(GLSLThing || {});
+module.exports = ValueNode;

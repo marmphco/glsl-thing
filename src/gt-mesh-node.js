@@ -1,22 +1,19 @@
-var GLSLThing = (function(gt) {
+var Mesh = require("./gt-mesh.js");
+var Node = require("./gt-node.js");
+var port = require("./gt-port.js");
 
-   /* MeshNode */
+var MeshNode = function(gl, vertices, indices, drawMode) {
+   var meshPort = new port.OutputPort(this, port.PortType.Mesh);
+   meshPort.exportValue(new Mesh(gl, vertices, indices, drawMode));
 
-   var MeshNode = function(gl, vertices, indices, drawMode) {
-      var meshPort = new gt.OutputPort(this, gt.PortType.Mesh);
-      meshPort.exportValue(new gt.Mesh(gl, vertices, indices, drawMode));
+   this._dirty = false;
+   this._inputPorts = {};
+   this._outputPorts = {
+      "mesh": meshPort,
+   };
 
-      this._dirty = false;
-      this._inputPorts = {};
-      this._outputPorts = {
-         "mesh": meshPort,
-      };
+   this.evaluate = function() {}
+}
+MeshNode.prototype = new Node();
 
-      this.evaluate = function() {}
-   }
-   MeshNode.prototype = new gt.Node();
-
-   gt.MeshNode = MeshNode;
-   return gt;
-
-})(GLSLThing || {});
+module.exports = MeshNode;
