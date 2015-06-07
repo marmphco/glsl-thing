@@ -67,6 +67,7 @@ var InputPort = function(node, type) {
 
    this.markDirty = function() {
       _node.markDirty();
+      // enqueue the owning node to be cleaned
       setTimeout(function() {
          _node.clean()
       }, 0);

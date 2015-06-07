@@ -1,4 +1,13 @@
 var Node = function() {
+
+   this.inputPortNames = function(name) {
+      return Object.keys(this._inputPorts);
+   }
+
+   this.outputPortNames = function(name) {
+      return Object.keys(this._outputPorts);
+   }
+
    this.inputPort = function(name) {
       return this._inputPorts[name];
    }
