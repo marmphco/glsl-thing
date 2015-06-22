@@ -14,7 +14,9 @@ module.exports = function(grunt) {
       },
       browserify: {
          options: {
-            transform: [require('grunt-react').browserify]
+            transform: [
+               ["babelify", {"blacklist": "validation.react"}]
+            ]
          },
          build: {
             src: [
@@ -32,7 +34,6 @@ module.exports = function(grunt) {
 
    grunt.loadNpmTasks('grunt-contrib-uglify');
    grunt.loadNpmTasks('grunt-browserify');
-   grunt.loadNpmTasks('grunt-react');
 
    grunt.registerTask('full', ['browserify', 'uglify']);
    grunt.registerTask('default', ['browserify']);
