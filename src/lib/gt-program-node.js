@@ -1,5 +1,6 @@
 var port = require("./gt-port.js")
 var Node = require("./gt-node.js")
+var NodeTypes = require('./gt-node-types.js');
 
 var ProgramNode = function(gl) {
    var vertexShaderPort = new port.InputPort(this, port.PortType.VertexShader);
@@ -16,6 +17,8 @@ var ProgramNode = function(gl) {
    this._outputPorts = {
       "program": programPort
    };
+
+   this.type = () => NodeTypes.ProgramNode;
 
    this.evaluate = function() {
       // remove attached shaders

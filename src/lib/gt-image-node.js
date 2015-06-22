@@ -1,5 +1,6 @@
 var Node = require("./gt-node.js");
 var port = require("./gt-port.js");
+var NodeTypes = require('./gt-node-types.js');
 
 var ImageNode = function(gl) {
    var texturePort = new port.OutputPort(this, gl.SAMPLER_2D);
@@ -9,6 +10,8 @@ var ImageNode = function(gl) {
    this._outputPorts = {
       "texture": texturePort
    };
+
+   this.type = () => NodeTypes.ImageNode;
 
    var _texture = gl.createTexture(); // needs to be cleaned up
    this.setImageData = function(imageData) {

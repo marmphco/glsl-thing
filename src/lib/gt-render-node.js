@@ -1,6 +1,7 @@
 var port = require("./gt-port.js");
 var Node = require("./gt-node.js");
 var Mesh = require("./gt-mesh.js");
+var NodeTypes = require('./gt-node-types.js');
 
 var uniformSuffix = function(gl, type) {
    switch (type) {
@@ -37,6 +38,8 @@ var RenderNode = function(gl) {
    };
    this._outputPorts = {/* texture */};
    this._uniformPorts = {};
+
+   this.type = () => NodeTypes.RenderNode;
 
    var generateUniformPorts = function(program, self) {
       // get uniform count

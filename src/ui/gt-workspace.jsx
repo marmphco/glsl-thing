@@ -1,5 +1,6 @@
 var React = require('React');
 var Node = require('./gt-node.jsx');
+var NodeTypes = require('../lib/gt-node-types.js');
 
 var Workspace = React.createClass({
     propTypes: {
@@ -11,7 +12,12 @@ var Workspace = React.createClass({
         return (
             <svg width={this.props.width} height={this.props.height} xmlns='http://www.w3.org/2000/svg'>
                 {this.props.nodes.map(function(node, index) {
-                    return <Node key={index} node={node} />
+                    if (node.type() == NodeTypes.Node) {
+                        return <Node key={index} node={node} />
+                    }
+                    else {
+                        return <Node key={index} node={node} />
+                    }
                 })}
             </svg>
         );

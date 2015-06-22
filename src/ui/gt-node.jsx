@@ -38,7 +38,6 @@ var Node = React.createClass({
       }
    },
    componentDidUpdate: function(prevProps, prevState) {
-      console.log("dfs")
       if (this.state.dragging && !prevState.dragging) {
          document.addEventListener('mousemove', this.handleMouseMove);
       }
@@ -68,6 +67,8 @@ var Node = React.createClass({
                   </text>
                );
             })}
+
+            {this.props.children}
          </g>
 
       );

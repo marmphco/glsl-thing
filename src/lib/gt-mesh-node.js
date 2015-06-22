@@ -1,6 +1,7 @@
 var Mesh = require("./gt-mesh.js");
 var Node = require("./gt-node.js");
 var port = require("./gt-port.js");
+var NodeTypes = require('./gt-node-types.js');
 
 var MeshNode = function(gl, vertices, indices, drawMode) {
    var meshPort = new port.OutputPort(this, port.PortType.Mesh);
@@ -11,6 +12,8 @@ var MeshNode = function(gl, vertices, indices, drawMode) {
    this._outputPorts = {
       "mesh": meshPort,
    };
+
+   this.type = () => NodeTypes.MeshNode;
 
    this.evaluate = function() {}
 }

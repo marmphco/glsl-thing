@@ -1,5 +1,6 @@
 var port = require("./gt-port.js");
 var Node = require("./gt-node.js");
+var NodeTypes = require('./gt-node-types.js');
 
 var ShaderNode = function(gl, type) {
    var sourcePort = new port.InputPort(this, port.PortType.String);
@@ -18,6 +19,7 @@ var ShaderNode = function(gl, type) {
       "shader": shaderPort
    };
 
+   this.type = () => NodeTypes.ShaderNode;
 
    this.evaluate = function() {
 

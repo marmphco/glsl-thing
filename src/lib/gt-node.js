@@ -1,4 +1,8 @@
+var NodeTypes = require('./gt-node-types.js');
+
 var Node = function() {
+
+   this.type = () => NodeTypes.Node;
 
    this.inputPortNames = function(name) {
       return Object.keys(this._inputPorts);
@@ -21,9 +25,9 @@ var Node = function() {
    }
 
    this.clean = function() {
-      console.log("cleaning: " + this + ", dirty?: " + this._dirty)
+      console.log('cleaning: ' + this + ', dirty?: ' + this._dirty)
       if (this._dirty) {
-         console.log("evaluating: " + this);
+         console.log('evaluating: ' + this);
          this.evaluate();
       }
       this._dirty = false;

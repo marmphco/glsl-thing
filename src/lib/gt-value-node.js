@@ -1,5 +1,6 @@
 var Node = require("./gt-node.js");
 var Port = require("./gt-port.js");
+var NodeTypes = require('./gt-node-types.js');
 
 var ValueNode = function(type) {
    var valuePort = new Port.OutputPort(this, type);
@@ -9,6 +10,8 @@ var ValueNode = function(type) {
    this._outputPorts = {
       "value": valuePort
    };
+
+   this.type = () => NodeTypes.ValueNode;
 
    this.setValue = function(value) {
       valuePort.exportValue(value);
