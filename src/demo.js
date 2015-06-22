@@ -64,6 +64,12 @@ window.onload = function() {
       renderNode.inputPort("test").bindTo(testNode.outputPort("value"));
       testNode.setValue(0.5);
 
+      setTimeout(() => {
+         var image = new Image();
+         image.src = GLSLThing.dataURLWithTexture(gl, renderNode.outputPort('renderedImage').value());
+         document.body.appendChild(image);
+      }, 0);
+
       var nodes = [
          vshSourceNode, fshSourceNode, vshNode, fshNode, programNode, meshNode, renderNode, imageNode
       ];
