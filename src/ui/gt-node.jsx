@@ -1,7 +1,7 @@
 var React = require("React");
 
 var Node = React.createClass({
-   propTypes: function() {
+   propTypes: {
       node: React.PropTypes.object
    },
    render: function() {
@@ -12,13 +12,13 @@ var Node = React.createClass({
          <strong>Input Ports:</strong>
          <ul>
             {this.props.node.inputPortNames().map(function(portName) {
-               return <li>{portName}: {self.props.node.inputPort(portName)}</li>;
+               return <li>{portName}: {self.props.node.inputPort(portName).value().toString()}</li>;
             })}
          </ul>
          <strong>Output Ports:</strong>
          <ul>
             {this.props.node.outputPortNames().map(function(portName) {
-               return <li>{portName}: {self.props.node.outputPort(portName)}</li>;
+               return <li>{portName}: {self.props.node.outputPort(portName).value().toString()}</li>;
             })}
          </ul>
          {this.props.children}

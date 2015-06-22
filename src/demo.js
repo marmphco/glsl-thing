@@ -1,7 +1,8 @@
 var GLSLThing = require("./lib/glsl-thing.js");
 var React = require("React");
-var Node = require("./ui/gt-node.jsx")
-var GLSLNode = require("./ui/gt-glslnode.jsx")
+var Workspace = require("./ui/gt-workspace.jsx");
+var Node = require("./ui/gt-node.jsx");
+var GLSLNode = require("./ui/gt-glslnode.jsx");
 
 window.onload = function() {
 
@@ -12,7 +13,8 @@ window.onload = function() {
 
    // get shader source
    var vertexSource = document.getElementById("test-vertex-shader").firstChild.textContent;
-   var fragmentSource = document.getElementById("test-fragment-shader").firstChild.textContent;
+   var fragmentSource = document.getElementById("test-fragment-shader").firstChild
+.textContent;
 
    // create shader source nodes
    var vshSourceNode = new GLSLThing.ValueNode(GLSLThing.Port.PortType.String);
@@ -51,26 +53,31 @@ window.onload = function() {
    renderNode.inputPort("mesh").bindTo(meshNode.outputPort("mesh"));
    renderNode.inputPort("program").bindTo(programNode.outputPort("program"));
 
-   React.render(
-      <div>
-         <Node node={vshSourceNode} derp="herp" />
-         <GLSLNode node={fshSourceNode} derp="herp" updateText={function(newText) {
-            fshSourceNode.setValue(newText);
-         }} />
-      </div>,
-         document.getElementById("react-thing")
-   )
-
    setTimeout(function() {
       console.log("IMAGE LOADED");
       var imageNode = new GLSLThing.ImageNode(gl);
       renderNode.inputPort("texture0").bindTo(imageNode.outputPort("texture"));
       imageNode.setImageData(document.getElementById("pusheen"));
-      testImage = imageNode.outputPort("texture").value();
+      var testImage = imageNode.outputPort("texture").value();
 
       var testNode = new GLSLThing.ValueNode(gl.FLOAT);
       renderNode.inputPort("test").bindTo(testNode.outputPort("value"));
       testNode.setValue(0.5);
+
+      var nodes = [
+         vshSourceNode, fshSourceNode, vshNode, fshNode, programNode, meshNode, renderNode, imageNode
+      ];
+      console.log((x => {x})(12));
+      React.render(
+         <div>
+            <GLSLNode node={fshSourceNode} derp="herp" updateText={function(newText) {
+               fshSourceNode.setValue(newText);
+            }} />
+            <Workspace width={600} height={400} nodes={nodes}/>
+         </div>,
+            document.getElementById("react-thing")
+      )
+
 
    }, 0);
 }

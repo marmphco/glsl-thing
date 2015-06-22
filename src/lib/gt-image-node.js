@@ -1,5 +1,5 @@
-Node = require("./gt-node.js");
-port = require("./gt-port.js");
+var Node = require("./gt-node.js");
+var port = require("./gt-port.js");
 
 var ImageNode = function(gl) {
    var texturePort = new port.OutputPort(this, gl.SAMPLER_2D);
