@@ -67,17 +67,11 @@ window.onload = function() {
       var nodes = [
          vshSourceNode, fshSourceNode, vshNode, fshNode, programNode, meshNode, renderNode, imageNode
       ];
-      console.log((x => {x})(12));
+      
       React.render(
-         <div>
-            <GLSLNode node={fshSourceNode} derp="herp" updateText={function(newText) {
-               fshSourceNode.setValue(newText);
-            }} />
-            <Workspace width={600} height={400} nodes={nodes}/>
-         </div>,
-            document.getElementById("react-thing")
-      )
-
+         <Workspace width={document.width} height={600} nodes={nodes}/>,
+         document.getElementById("react-thing")
+      );
 
    }, 0);
 }
