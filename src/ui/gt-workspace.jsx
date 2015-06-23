@@ -82,8 +82,7 @@ var Workspace = React.createClass({
     },
     render: function() {
         return (
-            <svg width={this.props.width}
-                 height={this.props.height}
+            <svg style={{'width': '100%', 'height': '100%'}}
                  xmlns='http://www.w3.org/2000/svg'
                  onMouseDown={this.handleMouseDown}
                  onMouseUp={this.handleMouseUp}

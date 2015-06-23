@@ -1,6 +1,15 @@
 module.exports = function(grunt) {
    grunt.initConfig({
       pkg: grunt.file.readJSON('package.json'),
+      copy: {
+         main: {
+            files: [
+               {src: 'html/index.html', dest: 'build/index.html'},
+               {src: 'css/*', dest: 'build/'},
+               {src: 'img/*', dest: 'build/'}
+            ]
+         }
+      },
       uglify: {
          options: {
             mangle: true,
@@ -8,33 +17,29 @@ module.exports = function(grunt) {
             sourceMap: true
          },
          build: {
-            src: 'build/<%= pkg.name %>.min.js',
-            dest: 'build/<%= pkg.name %>.min.js'
+            src: 'build/js/<%= pkg.name %>.min.js',
+            dest: 'build/js/<%= pkg.name %>.min.js'
          }
       },
       browserify: {
          options: {
             transform: [
-               ["babelify", {"blacklist": "validation.react"}]
+               ['babelify', {'blacklist': 'validation.react'}]
             ]
          },
          build: {
             src: [
-               'src/demo.js',
+               'src/app/app.js',
             ],
-            dest: 'build/<%= pkg.name %>.min.js'
+            dest: 'build/js/<%= pkg.name %>.min.js'
          }
       },
-      react: {
-         files: {
-            src: ["src/ui/*.jsx"]
-         }
-      }
    });
 
+   grunt.loadNpmTasks('grunt-contrib-copy');
    grunt.loadNpmTasks('grunt-contrib-uglify');
    grunt.loadNpmTasks('grunt-browserify');
 
-   grunt.registerTask('full', ['browserify', 'uglify']);
-   grunt.registerTask('default', ['browserify']);
+   grunt.registerTask('full', ['copy', 'browserify', 'uglify']);
+   grunt.registerTask('default', ['copy', 'browserify']);
 };

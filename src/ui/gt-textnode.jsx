@@ -1,5 +1,5 @@
-var React = require("React");
-var Node = require("./gt-node.jsx");
+var React = require('react');
+var Node = require('./gt-node.jsx');
 
 var TextNode = React.createClass({
    propTypes: {
@@ -9,6 +9,12 @@ var TextNode = React.createClass({
       onMouseUp: React.PropTypes.func,
       updateText: React.PropTypes.func
    },
+   handleMouseDown: function(event) {
+      event.stopPropagation();
+   },
+   handleMouseUp: function(event) {
+      event.stopPropagation();
+   },
    render: function() {
       var self = this;
       return (
@@ -17,13 +23,18 @@ var TextNode = React.createClass({
                viewData={this.props.viewData}
                onMouseDown={this.props.onMouseDown}
                onMouseUp={this.props.onMouseUp}>
-            <foreignObject width='100'
+            <foreignObject x={this.props.viewData.x}
+                           y={this.props.viewData.y}
+                           width='100'
                            height='100'
-                           requiredExtensions='http://www.w3.org/1999/xhtml'>
-               <body xmlns="http://www.w3.org/1999/xhtml">
+                           requiredExtensions='http://www.w3.org/1999/xhtml'
+                           onMouseDown={this.handleMouseDown}
+                           onMouseUp={this.handleMouseUp}>
+               <body xmlns='http://www.w3.org/1999/xhtml'>
                   <textarea type='text'
                             onChange={this.textChanged}
-                            defaultValue={this.props.node.outputPort("value").value()}>
+                            defaultValue={this.props.node.outputPort("value").value()}
+                            style={{'resize': 'none'}}>
                   </textarea>
                </body>
             </foreignObject>

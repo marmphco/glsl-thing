@@ -1,7 +1,7 @@
 var React = require('react');
 var AceEditor = require('react-ace');
-var GLSLThing = require('./lib/glsl-thing.js');
-var Workspace = require('./ui/gt-workspace.jsx');
+var GLSLThing = require('../lib/glsl-thing.js');
+var Workspace = require('../ui/gt-workspace.jsx');
 
 require('brace/mode/glsl');
 require('brace/theme/solarized_dark');
