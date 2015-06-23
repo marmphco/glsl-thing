@@ -11,7 +11,7 @@ var ValueNode = function(type) {
       "value": valuePort
    };
 
-   this.type = () => NodeTypes.ValueNode;
+   this.type = () => (type + NodeTypes.ValueNode);
 
    this.setValue = function(value) {
       valuePort.exportValue(value);

@@ -7,62 +7,37 @@ var makeTranslation = state => {
 var Node = React.createClass({
    propTypes: {
       node: React.PropTypes.object,
+      viewData: React.PropTypes.object,
+      id: React.PropTypes.number,
+      onMouseDown: React.PropTypes.func,
+      onMouseUp: React.PropTypes.func,
    },
    getInitialState: () => {
-      return {
-         dragging: false,
-         mouseOffsetX: 0,
-         mouseOffsetY: 0,
-         x: 0,
-         y: 0
-      }
+      return {}
    },
    handleMouseDown: function(event) {
-      this.setState({
-         dragging: true,
-         mouseOffsetX: event.clientX - this.state.x,
-         mouseOffsetY: event.clientY - this.state.y
-      })
+      this.props.onMouseDown(event, this.props.id);
    },
    handleMouseUp: function(event) {
-      this.setState({
-         dragging: false
-      })
-   },
-   handleMouseMove: function(event) {
-      if (this.state.dragging) {
-         this.setState({
-            x: event.clientX - this.state.mouseOffsetX,
-            y: event.clientY - this.state.mouseOffsetY
-         })
-      }
-   },
-   componentDidUpdate: function(prevProps, prevState) {
-      if (this.state.dragging && !prevState.dragging) {
-         document.addEventListener('mousemove', this.handleMouseMove);
-      }
-      else if (!this.state.dragging && prevState.dragging) {
-         document.removeEventListener('mousemove', this.handleMouseMove);
-      }
+      this.props.onMouseUp(event, this.props.id);
    },
    render: function() {
-      var self = this;
       return (
-         <g transform={makeTranslation(this.state)}
+         <g transform={makeTranslation(this.props.viewData)}
             onMouseDown={this.handleMouseDown}
             onMouseUp={this.handleMouseUp}>
-            <rect x='0' y='0' width={140} height={140} fill="#dddddd"></rect>
-            {this.props.node.inputPortNames().map(function(portName, index) {
+            <rect x='0' y='0' width={this.props.viewData.width} height={this.props.viewData.height} fill="#dddddd"></rect>
+            {this.props.node.inputPortNames().map((portName, index) => {
                return (
-                  <text key={portName + index.toString()} x='0' y={index * 20 + 20} text-anchor="start">
+                  <text key={index} x='0' y={index * 20 + 20} textAnchor="start">
                      {portName}
                   </text>
                );
             })}
 
-            {this.props.node.outputPortNames().map(function(portName, index) {
+            {this.props.node.outputPortNames().map((portName, index) => {
                return (
-                  <text key={portName + index.toString()} x='140' y={index * 20 + 20} text-anchor="end">
+                  <text key={index} x={this.props.viewData.width} y={index * 20 + 20} textAnchor="end">
                      {portName}
                   </text>
                );

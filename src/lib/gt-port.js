@@ -1,10 +1,10 @@
 /* PortTypes that have no OpenGL analog */
 var PortType = {
-   "String": "StringPortType",
-   "FragmentShader": "FragmentShaderPortType",
-   "VertexShader": "VertexShaderPortType",
-   "ShaderProgram": "ProgramPortType",
-   "Mesh": "MeshPortType"
+   "String": "String",
+   "FragmentShader": "FragmentShader",
+   "VertexShader": "VertexShader",
+   "ShaderProgram": "Program",
+   "Mesh": "Mesh"
 };
 
 /* InputPort */

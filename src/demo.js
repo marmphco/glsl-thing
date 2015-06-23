@@ -1,10 +1,24 @@
 var GLSLThing = require("./lib/glsl-thing.js");
 var React = require("React");
 var Workspace = require("./ui/gt-workspace.jsx");
-var Node = require("./ui/gt-node.jsx");
-var GLSLNode = require("./ui/gt-glslnode.jsx");
 
 window.onload = function() {
+
+   var nodes = [];
+   var bindings = [];
+
+   var addNode = function(node) {
+      nodes.push(node);
+      return nodes.length - 1;
+   }
+
+   var addBinding = function(inputNode, inputPort, outputNode, outputPort) {
+      nodes[inputNode].inputPort(inputPort).bindTo(nodes[outputNode].outputPort(outputPort));
+      bindings.push({
+         input: {id: inputNode, port: inputPort},
+         output: {id: outputNode, port: outputPort}
+      })
+   }
 
    // setup context
    var canvas = document.getElementById("canvas");
@@ -19,6 +33,8 @@ window.onload = function() {
    // create shader source nodes
    var vshSourceNode = new GLSLThing.ValueNode(GLSLThing.Port.PortType.String);
    var fshSourceNode = new GLSLThing.ValueNode(GLSLThing.Port.PortType.String);
+   var vshSourceNodeID = addNode(vshSourceNode);
+   var fshSourceNodeID = addNode(fshSourceNode);
    // set the shader node inputs
    vshSourceNode.setValue(vertexSource);
    fshSourceNode.setValue(fragmentSource);
@@ -26,15 +42,18 @@ window.onload = function() {
    // create shader nodes
    var vshNode = new GLSLThing.ShaderNode(gl, gl.VERTEX_SHADER);
    var fshNode = new GLSLThing.ShaderNode(gl, gl.FRAGMENT_SHADER);
+   var vshNodeID = addNode(vshNode);
+   var fshNodeID = addNode(fshNode);
    // bind shader nodes to source nodes
-   vshNode.inputPort("source").bindTo(vshSourceNode.outputPort("value"));
-   fshNode.inputPort("source").bindTo(fshSourceNode.outputPort("value"));
+   addBinding(vshNodeID, "source", vshSourceNodeID, "value");
+   addBinding(fshNodeID, "source", fshSourceNodeID, "value");
 
    // create program node
    var programNode = new GLSLThing.ProgramNode(gl);
+   var programNodeID = addNode(programNode);
    // bind shader nodes to inputs of program node
-   programNode.inputPort("vertexShader").bindTo(vshNode.outputPort("shader"));
-   programNode.inputPort("fragmentShader").bindTo(fshNode.outputPort("shader"));
+   addBinding(programNodeID, "vertexShader", vshNodeID, "shader");
+   addBinding(programNodeID, "fragmentShader", fshNodeID, "shader");
 
    // create mesh for a square
    var vertices = new Float32Array([
@@ -46,22 +65,25 @@ window.onload = function() {
    var indices = new Uint16Array([0, 1, 2, 3]);
    // create mesh node with square mesh
    var meshNode = new GLSLThing.MeshNode(gl, vertices, indices, gl.TRIANGLE_STRIP);
+   var meshNodeID = addNode(meshNode);
 
    // create render node
    var renderNode = new GLSLThing.RenderNode(gl);
+   var renderNodeID = addNode(renderNode);
    // bind render node inputs to mesh and program
-   renderNode.inputPort("mesh").bindTo(meshNode.outputPort("mesh"));
-   renderNode.inputPort("program").bindTo(programNode.outputPort("program"));
+   addBinding(renderNodeID, "mesh", meshNodeID, "mesh");
+   addBinding(renderNodeID, "program", programNodeID, "program");
 
    setTimeout(function() {
       console.log("IMAGE LOADED");
       var imageNode = new GLSLThing.ImageNode(gl);
-      renderNode.inputPort("texture0").bindTo(imageNode.outputPort("texture"));
+      var imageNodeID = addNode(imageNode);
+      addBinding(renderNodeID, "texture0", imageNodeID, "texture");
       imageNode.setImageData(document.getElementById("pusheen"));
-      var testImage = imageNode.outputPort("texture").value();
 
       var testNode = new GLSLThing.ValueNode(gl.FLOAT);
-      renderNode.inputPort("test").bindTo(testNode.outputPort("value"));
+      var testNodeID = addNode(testNode);
+      addBinding(renderNodeID, "test", testNodeID, "value");
       testNode.setValue(0.5);
 
       setTimeout(() => {
@@ -70,12 +92,8 @@ window.onload = function() {
          document.body.appendChild(image);
       }, 0);
 
-      var nodes = [
-         vshSourceNode, fshSourceNode, vshNode, fshNode, programNode, meshNode, renderNode, imageNode
-      ];
-      
       React.render(
-         <Workspace width={document.width} height={600} nodes={nodes}/>,
+         <Workspace width={document.width} height={document.height} nodes={nodes} bindings={bindings} />,
          document.getElementById("react-thing")
       );
 
