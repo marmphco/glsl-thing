@@ -23,7 +23,7 @@ var TextNode = React.createClass({
                <body xmlns="http://www.w3.org/1999/xhtml">
                   <textarea type='text'
                             onChange={this.textChanged}
-                            value={this.props.node.outputPort("value").value()}>
+                            defaultValue={this.props.node.outputPort("value").value()}>
                   </textarea>
                </body>
             </foreignObject>

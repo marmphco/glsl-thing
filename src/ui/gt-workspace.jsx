@@ -97,7 +97,8 @@ var Workspace = React.createClass({
                                              id={index}
                                              viewData={this.state.viewData[index]} 
                                              onMouseDown={this.handleNodeMouseDown}
-                                             onMouseUp={this.handleNodeMouseUp} />
+                                             onMouseUp={this.handleNodeMouseUp} 
+                                             updateText={(newText) => {node.setValue(newText);}}/>
                         }
                         else {
                             return <Node key={index}
