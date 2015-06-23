@@ -2,6 +2,8 @@ var React = require('react');
 var AceEditor = require('react-ace');
 var GLSLThing = require('../lib/glsl-thing.js');
 var Workspace = require('../ui/gt-workspace.jsx');
+var NodeTypes = require('../lib/gt-node-types.js');
+var PortTypes = require('../lib/gt-port.js').PortType;
 
 require('brace/mode/glsl');
 require('brace/theme/solarized_dark');
@@ -61,9 +63,9 @@ window.onload = function() {
 
    // create mesh for a square
    var vertices = new Float32Array([
-      0.0, 0.0, 0.0,
-      1.0, 0.0, 0.0,
-      0.0, 1.0, 0.0,
+      -1.0, -1.0, 0.0,
+      1.0, -1.0, 0.0,
+      -1.0, 1.0, 0.0,
       1.0, 1.0, 0.0
    ]);
    var indices = new Uint16Array([0, 1, 2, 3]);
@@ -91,21 +93,63 @@ window.onload = function() {
       testNode.setValue(0.5);
 
       setTimeout(() => {
-         var image = new Image();
-         image.src = GLSLThing.dataURLWithTexture(gl, renderNode.outputPort('renderedImage').value());
-         document.body.appendChild(image);
+         //var image = new Image();
+         console.log('dfadfsadfs');
+         document.getElementById('output').src = GLSLThing.dataURLWithTexture(gl, renderNode.outputPort('renderedImage').value());
+        // document.body.appendChild(image);
       }, 0);
 
-      React.render(
-         <div>
-            <Workspace nodes={nodes}
-                       bindings={bindings} />
-            <AceEditor mode='glsl'
-                       theme='solarized_dark'
-                       name='code-editor' />
-         </div>,
-         document.getElementById('react-thing')
-      );
+      var selectedNode;
+
+      var handleNodeSelected = (node) => {
+         if (node.type() == NodeTypes.ValueNode) {
+            if (node.outputPort('value').type() == PortTypes.String) {
+               render(node.outputPort('value').value());
+               selectedNode = node;
+            }
+         }
+      };
+
+      var handleNodeDeselected = (node) => {
+         selectedNode = null;
+         render('');
+      };
+
+      var handleEditorChanged = (newValue) => {
+         if (selectedNode) {
+            selectedNode.setValue(newValue);
+            setTimeout(() => {
+               //var image = new Image();
+               console.log('dfadfsadfs');
+               document.getElementById('output').src = GLSLThing.dataURLWithTexture(gl, renderNode.outputPort('renderedImage').value());
+              // document.body.appendChild(image);
+            }, 0);
+         }
+      };
+
+      var render = function(editorValue) {
+         React.render(
+            <div>
+               <div className='gt-workspace'>
+                  <Workspace nodes={nodes}
+                             bindings={bindings} 
+                             onNodeSelected={handleNodeSelected}
+                             onNodeDeselected={handleNodeDeselected}/>
+               </div>
+               <div className='gt-shader-editor'>
+                  <AceEditor mode='glsl'
+                             theme='solarized_dark'
+                             name='code-editor' 
+                             width='100%'
+                             height='100%' 
+                             value={editorValue}
+                             onChange={handleEditorChanged} />
+               </div>
+            </div>,
+            document.getElementById('react-thing')
+         );
+      }
+      render();
 
    }, 0);
 }

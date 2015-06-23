@@ -1,15 +1,14 @@
 var React = require('React');
 var Node = require('./gt-node.jsx');
-var TextNode = require('./gt-textnode.jsx');
 var PortTypes = require('../lib/gt-port.js').PortType;
 var NodeTypes = require('../lib/gt-node-types.js');
 
 var Workspace = React.createClass({
     propTypes: {
-        width: React.PropTypes.number,
-        height: React.PropTypes.number,
         nodes: React.PropTypes.array,
-        bindings: React.PropTypes.array
+        bindings: React.PropTypes.array,
+        onNodeSelected: React.PropTypes.func,
+        onNodeDeselected: React.PropTypes.func
     },
     getInitialState: () => {
         return {
@@ -44,6 +43,8 @@ var Workspace = React.createClass({
         this.setState({panning: false})
     },
     handleNodeMouseDown: function(event, id) {
+        this.props.onNodeSelected(this.props.nodes[id]);
+
         this.setState({
             dragging: true,
             draggingID: id,
@@ -53,6 +54,8 @@ var Workspace = React.createClass({
         event.stopPropagation();
     },
     handleNodeMouseUp: function(event, id) {
+        this.props.onNodeSelected(this.props.nodes[id]);
+
         this.setState({dragging: false});
         event.stopPropagation();
     },
@@ -90,7 +93,7 @@ var Workspace = React.createClass({
 
                 <g transform={'translate(' + this.state.globalOffsetX + ',' + this.state.globalOffsetY + ')'}>                    
                     {this.props.nodes.map((node, index) => {
-                        if (node.type() == (PortTypes.String + NodeTypes.ValueNode)) {
+                        /*if (node.type() == (PortTypes.String + NodeTypes.ValueNode)) {
                             return <TextNode key={index}
                                              node={node}
                                              id={index}
@@ -99,14 +102,14 @@ var Workspace = React.createClass({
                                              onMouseUp={this.handleNodeMouseUp} 
                                              updateText={(newText) => {node.setValue(newText);}}/>
                         }
-                        else {
+                        else {*/
                             return <Node key={index}
                                          node={node}
                                          id={index}
                                          viewData={this.state.viewData[index]}
                                          onMouseDown={this.handleNodeMouseDown}
                                          onMouseUp={this.handleNodeMouseUp} />
-                        }
+                       // }
                     })}
                     
                     {this.props.bindings.map((binding, index) => {

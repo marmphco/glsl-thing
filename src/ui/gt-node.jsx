@@ -1,4 +1,4 @@
-var React = require("React");
+var React = require('react');
 
 var makeTranslation = state => {
    return 'translate(' + state.x + ',' + state.y + ')'
@@ -26,10 +26,10 @@ var Node = React.createClass({
          <g transform={makeTranslation(this.props.viewData)}
             onMouseDown={this.handleMouseDown}
             onMouseUp={this.handleMouseUp}>
-            <rect x='0' y='0' width={this.props.viewData.width} height={this.props.viewData.height} fill="#dddddd"></rect>
+            <rect x='0' y='0' width={this.props.viewData.width} height={this.props.viewData.height} fill='#dddddd'></rect>
             {this.props.node.inputPortNames().map((portName, index) => {
                return (
-                  <text key={index} x='0' y={index * 20 + 20} textAnchor="start">
+                  <text key={index} x='0' y={index * 20 + 20} textAnchor='start'>
                      {portName}
                   </text>
                );
@@ -37,7 +37,7 @@ var Node = React.createClass({
 
             {this.props.node.outputPortNames().map((portName, index) => {
                return (
-                  <text key={index} x={this.props.viewData.width} y={index * 20 + 20} textAnchor="end">
+                  <text key={index} x={this.props.viewData.width} y={index * 20 + 20} textAnchor='end'>
                      {portName}
                   </text>
                );
