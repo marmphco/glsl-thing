@@ -11,17 +11,21 @@ var Workspace = React.createClass({
         nodes: React.PropTypes.object,
         bindings: React.PropTypes.array,
         onNodeSelected: React.PropTypes.func,
-        onNodeDeselected: React.PropTypes.func
+        onNodeDeselected: React.PropTypes.func,
+        onPortsConnected: React.PropTypes.func
     },
     getInitialState: () => {
         return {
-            dragging: false,
-            draggingID: 0,
-            mouseOffsetX: 0,
-            mouseOffsetY: 0,
+            draggingNode: false,
+            draggingPort: false,
             panning: false,
             globalOffsetX: 0,
             globalOffsetY: 0,
+            mouseOffsetX: 0,
+            mouseOffsetY: 0,
+            draggedNodeID: 0,
+            draggedPortName: '',
+            draggedPortPolarity: 'input',
             viewData: {}
         };
     },
@@ -44,15 +48,19 @@ var Workspace = React.createClass({
         });
     },
     handleMouseUp: function(event, id) {
-        this.setState({panning: false})
+        this.setState({
+            panning: false,
+            draggingNode: false,
+            draggingPort: false,
+        });
     },
     handleNodeMouseDown: function(event, id) {
         this.props.onNodeSelected(this.props.nodes[id]);
 
         var nodeViewPosition = this.state.viewData[id].offset;
         this.setState({
-            dragging: true,
-            draggingID: id,
+            draggingNode: true,
+            draggedNodeID: id,
             mouseOffsetX: event.clientX - nodeViewPosition.x,
             mouseOffsetY: event.clientY - nodeViewPosition.y
         });
@@ -60,15 +68,50 @@ var Workspace = React.createClass({
     },
     handleNodeMouseUp: function(event, id) {
         this.props.onNodeSelected(this.props.nodes[id]);
-
-        this.setState({dragging: false});
+        this.setState({draggingNode: false});
         event.stopPropagation();
     },
+    handleInputPortMouseDown: function(event, id, portName) {
+        this.setState({
+            draggingPort: true,
+            draggedNodeID: id,
+            draggedPortName: portName,
+            draggedPortPolarity: 'input'
+        });
+    },
+    handleInputPortMouseUp: function(event, id, portName) {
+        if (this.state.draggingPort && this.state.draggedPortPolarity == 'output') {
+            this.props.onPortsConnected(id, portName, this.state.draggedNodeID, this.state.draggedPortName);
+        }
+        this.setState({
+            draggingPort: false,
+            draggingNode: false,
+            panning: false
+        });
+    },
+    handleOutputPortMouseDown: function(event, id, portName) {
+        this.setState({
+            draggingPort: true,
+            draggedNodeID: id,
+            draggedPortName: portName,
+            draggedPortPolarity: 'output'
+        });
+    },
+    handleOutputPortMouseUp: function(event, id, portName) {
+        if (this.state.draggingPort && this.state.draggedPortPolarity == 'input') {
+            this.props.onPortsConnected(this.state.draggedNodeID, this.state.draggedPortName, id, portName);
+        }
+        this.setState({
+            draggingPort: false,
+            draggingNode: false,
+            panning: false
+        });
+    },
     handleMouseMove: function(event) {
-        if (this.state.dragging) {
+        if (this.state.draggingNode) {
             const viewData = this.state.viewData;
             const newViewData = update(this.state.viewData, {
-                [this.state.draggingID]: {
+                [this.state.draggedNodeID]: {
                     offset: {
                         x: {$set: event.clientX - this.state.mouseOffsetX},
                         y: {$set: event.clientY - this.state.mouseOffsetY}
@@ -80,11 +123,16 @@ var Workspace = React.createClass({
                 viewData: newViewData
             })
         }
-        else if (this.state.panning) {
+        
+        if (this.state.panning) {
             this.setState({
                 globalOffsetX: event.clientX - this.state.mouseOffsetX,
                 globalOffsetY: event.clientY - this.state.mouseOffsetY
             })
+        }
+
+        if (this.state.draggingPort) {
+
         }
     },
     render: function() {
@@ -103,7 +151,11 @@ var Workspace = React.createClass({
                                          id={key}
                                          viewData={this.state.viewData[key]}
                                          onMouseDown={this.handleNodeMouseDown}
-                                         onMouseUp={this.handleNodeMouseUp} />
+                                         onMouseUp={this.handleNodeMouseUp}
+                                         onInputPortMouseDown={this.handleInputPortMouseDown}
+                                         onInputPortMouseUp={this.handleInputPortMouseUp}
+                                         onOutputPortMouseDown={this.handleOutputPortMouseDown}
+                                         onOutputPortMouseUp={this.handleOutputPortMouseUp} />
                     })}
                     
                     {this.props.bindings.map((binding, index) => {

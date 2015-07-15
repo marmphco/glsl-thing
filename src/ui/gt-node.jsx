@@ -10,6 +10,10 @@ var Node = React.createClass({
       id: React.PropTypes.string,
       onMouseDown: React.PropTypes.func,
       onMouseUp: React.PropTypes.func,
+      onInputPortMouseDown: React.PropTypes.func,
+      onInputPortMouseUp: React.PropTypes.func,
+      onOutputPortMouseDown: React.PropTypes.func,
+      onOutputPortMouseUp: React.PropTypes.func,
    },
    getInitialState: () => {
       return {}
@@ -19,6 +23,22 @@ var Node = React.createClass({
    },
    handleMouseUp: function(event) {
       this.props.onMouseUp(event, this.props.id);
+   },
+   handleInputPortMouseDown: function(portName, event) {
+      this.props.onInputPortMouseDown(event, this.props.id, portName)
+      event.stopPropagation();
+   },
+   handleInputPortMouseUp: function(portName, event) {
+      this.props.onInputPortMouseUp(event, this.props.id, portName)
+      event.stopPropagation();
+   },
+   handleOutputPortMouseDown: function(portName, event) {
+      this.props.onOutputPortMouseDown(event, this.props.id, portName)
+      event.stopPropagation();
+   },
+   handleOutputPortMouseUp: function(portName, event) {
+      this.props.onOutputPortMouseUp(event, this.props.id, portName)
+      event.stopPropagation();
    },
    makeTranslation: offset => {
       return 'translate(' + offset.x + ',' + offset.y + ')'
@@ -40,11 +60,13 @@ var Node = React.createClass({
 
                const portPosition = this.props.viewData.inputPortPosition(portName);
                return (
-                  <g>
-                     <circle cx={portPosition.x} cy={portPosition.y} r="4">
-                     </circle>
-                     <text key={index}
-                           x={portPosition.x + 8}
+                  <g key={index}>
+                     <circle cx={portPosition.x}
+                             cy={portPosition.y}
+                             r="4"
+                             onMouseDown={this.handleInputPortMouseDown.bind(this, portName)}
+                             onMouseUp={this.handleInputPortMouseUp.bind(this, portName)} />
+                     <text x={portPosition.x + 8}
                            y={portPosition.y}
                            textAnchor='start'>
                         {portName}
@@ -57,11 +79,13 @@ var Node = React.createClass({
 
                const portPosition = this.props.viewData.outputPortPosition(portName);
                return (
-                  <g>
-                     <circle cx={portPosition.x} cy={portPosition.y} r="4">
-                     </circle>
-                     <text key={index}
-                           x={portPosition.x - 8}
+                  <g key={index}>
+                     <circle cx={portPosition.x}
+                             cy={portPosition.y}
+                             r="4"
+                             onMouseDown={this.handleOutputPortMouseDown.bind(this, portName)}
+                             onMouseUp={this.handleOutputPortMouseUp.bind(this, portName)} />
+                     <text x={portPosition.x - 8}
                            y={portPosition.y}
                            textAnchor='end'>
                         {portName}

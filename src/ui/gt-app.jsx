@@ -76,17 +76,17 @@ var App = React.createClass({
         return this.state.uid++;
     },
     addBinding: function(inputNodeID, inputPortName, outputNodeID, outputPortName) {
-        const inputNode = nodes[inputNodeID];
+        const inputNode = this.state.nodes[inputNodeID];
         const inputPort = inputNode.inputPort(inputPortName);
-        const outputNode = nodes[outputNodeID];
+        const outputNode = this.state.nodes[outputNodeID];
         const outputPort = outputNode.outputPort(outputPortName);
 
         inputPort.bindTo(outputPort);
 
         this.setState({
             bindings: this.state.bindings.concat([{
-                input: {id: inputNode, port: inputPort},
-                output: {id: outputNode, port: outputPort}
+                input: {id: inputNodeID, port: inputPortName},
+                output: {id: outputNodeID, port: outputPortName}
             }])
         });
     },
@@ -95,13 +95,20 @@ var App = React.createClass({
         this.addNode(nodeConstructors[key](this.props.glContext));
     },
     handleNodeSelected: function(node) {
-        if (node.type() == NodeTypes.ValueNode) {
-            if (node.outputPort('value').type() == PortTypes.String) {
-                this.setState({
-                    editorText: node.outputPort('value').value(),
-                    selectedNode: node
-                });
-            }
+        switch (node.type()) {
+            case NodeTypes.ValueNode:
+                if (node.outputPort('value').type() == PortTypes.String) {
+                    this.setState({
+                        editorText: node.outputPort('value').value(),
+                        selectedNode: node
+                    });
+                }
+                break;
+            case NodeTypes.RenderNode:
+                const texture = node.outputPort('renderedImage').value();
+                const dataURL = GLSLThing.dataURLWithTexture(this.props.glContext, texture);
+                document.getElementById('output').src = dataURL;
+            default: break;
         }
     },
     handleNodeDeselected: function(node) {
@@ -110,13 +117,12 @@ var App = React.createClass({
             selectedNode: null
         })
     },
+    handlePortsConnected: function(inputNodeID, inputPortName, outputNodeID, outputPortName) {
+        this.addBinding(inputNodeID, inputPortName, outputNodeID, outputPortName);
+    },
     handleEditorChanged: function(newValue) {
         if (this.state.selectedNode) {
             this.state.selectedNode.setValue(newValue);
-            setTimeout(() => {
-               console.log('render');
-               //document.getElementById('output').src = GLSLThing.dataURLWithTexture(gl, renderNode.outputPort('renderedImage').value());
-            }, 500); // artificial delay
          }
     },
     render: function() {
@@ -126,7 +132,8 @@ var App = React.createClass({
                     <Workspace nodes={this.state.nodes}
                                bindings={this.state.bindings} 
                                onNodeSelected={this.handleNodeSelected}
-                               onNodeDeselected={this.handleNodeDeselected} />
+                               onNodeDeselected={this.handleNodeDeselected}
+                               onPortsConnected={this.handlePortsConnected} />
                 </div>
                 <div className='gt-shader-editor'>
                     <AceEditor mode='glsl'
@@ -138,7 +145,9 @@ var App = React.createClass({
                                onChange={this.handleEditorChanged} />
                 </div>
                 <DropdownButton bsStyle="default" title="Add Node" onSelect={this.handleAddNode}>
-                    {Object.keys(nodeConstructors).map(key => <MenuItem eventKey={key}>{key}</MenuItem>)}
+                    {Object.keys(nodeConstructors).map(key => {
+                        return <MenuItem key={key} eventKey={key}>{key}</MenuItem>
+                    })}
                 </DropdownButton>
             </div>
         );
