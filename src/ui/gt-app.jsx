@@ -11,16 +11,47 @@ var Button = require('react-bootstrap').Button;
 
 require('brace/mode/glsl');
 require('brace/theme/solarized_dark');
-/*
-var nodeTypes = [
-    ['Source', GLSLThing.ValueNode ],
-    ['Scalar', GLSLThing.ValueNode ],
-    ['Mesh', GLSLThing.MeshNode ],
-    ['Image', GLSLThing.ImageNode ],
-    ['Shader', GLSLThing.ValueNode ],
-    ['Program', GLSLThing.ValueNode ],
-    ['Render', GLSLThing.ValueNode ]
-];*/
+
+var nodeConstructors = {
+    'Source': (gl) => {
+        let node = new GLSLThing.ValueNode(PortTypes.String);
+        node.setValue("shader");
+        return node;
+    },
+    'Scalar': (gl) => {
+        return new GLSLThing.ValueNode(PortTypes.Number);
+    },
+    'Mesh': (gl) => {
+        // default placeholder square mesh for now
+        var vertices = new Float32Array([
+            -1.0, -1.0, 0.0,
+            1.0, -1.0, 0.0,
+            -1.0, 1.0, 0.0,
+            1.0, 1.0, 0.0
+        ]);
+        var indices = new Uint16Array([0, 1, 2, 3]);
+
+        return new GLSLThing.MeshNode(gl, vertices, indices, gl.TRIANGLE_STRIP);
+    },
+    'Image': (gl) => {
+        // PlaceHolder
+        let node = new GLSLThing.ValueNode(PortTypes.String);
+        node.setValue("placeholder image node");
+        return node;
+    },
+    'VertexShader': (gl) => {
+        return new GLSLThing.ShaderNode(gl, gl.VERTEX_SHADER);
+    },
+    'FragmentShader': (gl) => {
+        return new GLSLThing.ShaderNode(gl, gl.FRAGMENT_SHADER);
+    },
+    'Program': (gl) => {
+        return new GLSLThing.ProgramNode(gl);
+    },
+    'Render': (gl) => {
+        return new GLSLThing.RenderNode(gl);
+    }
+};
 
 var App = React.createClass({
     propTypes: {
@@ -30,7 +61,8 @@ var App = React.createClass({
         return {
             nodes: {},
             bindings: [],
-            editorText: "",
+            editorText: '',
+            selectedNode: null,
             uid: 0
         };
     },
@@ -58,19 +90,34 @@ var App = React.createClass({
             }])
         });
     },
-    handleAddNode: function() {
-        console.log("adds node");
-        const node = new GLSLThing.ValueNode(GLSLThing.Port.PortType.String);
-        this.addNode(node);
+    handleAddNode: function(key) {
+        console.log(key);
+        this.addNode(nodeConstructors[key](this.props.glContext));
     },
-    handleNodeSelected: function() {
-
+    handleNodeSelected: function(node) {
+        if (node.type() == NodeTypes.ValueNode) {
+            if (node.outputPort('value').type() == PortTypes.String) {
+                this.setState({
+                    editorText: node.outputPort('value').value(),
+                    selectedNode: node
+                });
+            }
+        }
     },
-    handleNodeDeselected: function() {
-
+    handleNodeDeselected: function(node) {
+        this.setState({
+            editorText: '',
+            selectedNode: null
+        })
     },
-    handleEditorChanged: function() {
-
+    handleEditorChanged: function(newValue) {
+        if (this.state.selectedNode) {
+            this.state.selectedNode.setValue(newValue);
+            setTimeout(() => {
+               console.log('render');
+               //document.getElementById('output').src = GLSLThing.dataURLWithTexture(gl, renderNode.outputPort('renderedImage').value());
+            }, 500); // artificial delay
+         }
     },
     render: function() {
         return (
@@ -91,13 +138,7 @@ var App = React.createClass({
                                onChange={this.handleEditorChanged} />
                 </div>
                 <DropdownButton bsStyle="default" title="Add Node" onSelect={this.handleAddNode}>
-                    <MenuItem eventKey='Source'>Source</MenuItem>
-                    <MenuItem eventKey='Scalar'>Scalar</MenuItem>
-                    <MenuItem eventKey='Mesh'>Mesh</MenuItem>
-                    <MenuItem eventKey='Image'>Image</MenuItem>
-                    <MenuItem eventKey='Shader'>Shader</MenuItem>
-                    <MenuItem eventKey='Program'>Program</MenuItem>
-                    <MenuItem eventKey='Render'>Render</MenuItem>
+                    {Object.keys(nodeConstructors).map(key => <MenuItem eventKey={key}>{key}</MenuItem>)}
                 </DropdownButton>
             </div>
         );
