@@ -3,7 +3,7 @@ var Node = require('./gt-node.jsx');
 var PortTypes = require('../lib/gt-port.js').PortType;
 var NodeTypes = require('../lib/gt-node-types.js');
 var NodeViewModel = require('./gt-node-view-model.js');
-//var Binding = require('gt-binding.js')
+var Binding = require('./gt-binding.jsx')
 
 var Workspace = React.createClass({
     propTypes: {
@@ -26,18 +26,7 @@ var Workspace = React.createClass({
     },
     componentWillMount: function() {
         this.state.viewData = this.props.nodes.map(node => {
-            return new NodeViewModel(node);/*{
-                x: Math.random() * 400,
-                y: Math.random() * 400,
-                width: 140,
-                height: 140,
-                inputPortPosition: function(name) {
-                    return node.inputPortNames().indexOf(name) * 20 + 20;
-                },
-                outputPortPosition: function(name) {
-                    return node.outputPortNames().indexOf(name) * 20 + 20;
-                }
-            }*/
+            return new NodeViewModel(node);
         });
     },
     handleMouseDown: function(event, id) {
@@ -84,18 +73,6 @@ var Workspace = React.createClass({
             })
         }
     },
-    getBindingPath: function(binding) {
-        var inputViewData = this.state.viewData[binding.input.id];
-        var outputViewData = this.state.viewData[binding.output.id];
-
-        var inputPortPosition = inputViewData.inputPortPosition(binding.input.port);
-        var outputPortPosition = outputViewData.outputPortPosition(binding.output.port);
-
-        return 'M' + (inputViewData.offset.x + inputPortPosition.x) +
-               ' ' + (inputViewData.offset.y + inputPortPosition.y) +
-               'L' + (outputViewData.offset.x + outputPortPosition.x) +
-               ' ' + (outputViewData.offset.y + outputPortPosition.y);
-    },
     render: function() {
         return (
             <svg style={{'width': '100%', 'height': '100%'}}
@@ -115,9 +92,10 @@ var Workspace = React.createClass({
                     })}
                     
                     {this.props.bindings.map((binding, index) => {
-                        /*return <Binding source={this.state.node[binding.input.id]}
-                                        dest={this.state.viewData[binding.input.id]}*/
-                        return <path stroke='black' d={this.getBindingPath(binding)} />
+                        return <Binding input={this.state.viewData[binding.input.id]}
+                                        output={this.state.viewData[binding.output.id]}
+                                        inputPortName={binding.input.port}
+                                        outputPortNam={binding.output.port} />
                     })}
                 </g>
             </svg>
