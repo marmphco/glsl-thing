@@ -7,7 +7,7 @@ var Node = React.createClass({
    propTypes: {
       node: React.PropTypes.instanceOf(NodeModel),
       viewData: React.PropTypes.instanceOf(NodeViewModel),
-      id: React.PropTypes.number,
+      id: React.PropTypes.string,
       onMouseDown: React.PropTypes.func,
       onMouseUp: React.PropTypes.func,
    },

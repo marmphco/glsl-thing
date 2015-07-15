@@ -8,7 +8,7 @@ var Binding = require('./gt-binding.jsx')
 
 var Workspace = React.createClass({
     propTypes: {
-        nodes: React.PropTypes.array,
+        nodes: React.PropTypes.object,
         bindings: React.PropTypes.array,
         onNodeSelected: React.PropTypes.func,
         onNodeDeselected: React.PropTypes.func
@@ -22,23 +22,19 @@ var Workspace = React.createClass({
             panning: false,
             globalOffsetX: 0,
             globalOffsetY: 0,
-            viewData: []
+            viewData: {}
         };
     },
-    componentWillMount: function() {
-        this.state.viewData = this.props.nodes.map(node => {
-            return new NodeViewModel(node);
-        });
-    },
     componentWillReceiveProps: function(nextProps) {
-        // props.nodes should be an Object to make this easier
-        // nodes should be assigned unique keys
-        if (nextProps.nodes.length > this.state.viewData.length)
-        this.setState({
-            viewData: this.state.viewData.concat([
-                new NodeViewModel(nextProps.nodes[nextProps.nodes.length - 1])
-            ])
-        });
+        for (let key in nextProps.nodes) {
+            if (!(key in this.state.viewData)) {
+                this.setState({
+                    viewData: update(this.state.viewData, {
+                        [key]: {$set: new NodeViewModel(nextProps.nodes[key])}
+                    })
+                });
+            }
+        }
     },
     handleMouseDown: function(event, id) {
         this.setState({
@@ -100,17 +96,19 @@ var Workspace = React.createClass({
                  onMouseMove={this.handleMouseMove}>
 
                 <g transform={'translate(' + this.state.globalOffsetX + ',' + this.state.globalOffsetY + ')'}>                    
-                    {this.props.nodes.map((node, index) => {
-                            return <Node key={index}
+                    {Object.keys(this.props.nodes).map((key) => {
+                            const node = this.props.nodes[key];
+                            return <Node key={key}
                                          node={node}
-                                         id={index}
-                                         viewData={this.state.viewData[index]}
+                                         id={key}
+                                         viewData={this.state.viewData[key]}
                                          onMouseDown={this.handleNodeMouseDown}
                                          onMouseUp={this.handleNodeMouseUp} />
                     })}
                     
                     {this.props.bindings.map((binding, index) => {
-                        return <Binding input={this.state.viewData[binding.input.id]}
+                        return <Binding key={index}
+                                        input={this.state.viewData[binding.input.id]}
                                         output={this.state.viewData[binding.output.id]}
                                         inputPortName={binding.input.port}
                                         outputPortNam={binding.output.port} />

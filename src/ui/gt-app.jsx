@@ -1,4 +1,5 @@
 var React = require('react');
+var update = require('react/lib/update');
 var AceEditor = require('react-ace');
 var Workspace = require('../ui/gt-workspace.jsx');
 var GLSLThing = require('../lib/glsl-thing.js');
@@ -10,16 +11,16 @@ var Button = require('react-bootstrap').Button;
 
 require('brace/mode/glsl');
 require('brace/theme/solarized_dark');
-
+/*
 var nodeTypes = [
-   /* ['Source', GLSLThing.ValueNode ],
+    ['Source', GLSLThing.ValueNode ],
     ['Scalar', GLSLThing.ValueNode ],
     ['Mesh', GLSLThing.MeshNode ],
     ['Image', GLSLThing.ImageNode ],
     ['Shader', GLSLThing.ValueNode ],
     ['Program', GLSLThing.ValueNode ],
-    ['Render', GLSLThing.ValueNode ],*/
-];
+    ['Render', GLSLThing.ValueNode ]
+];*/
 
 var App = React.createClass({
     propTypes: {
@@ -27,16 +28,20 @@ var App = React.createClass({
     },
     getInitialState: function() {
         return {
-            nodes: [],
+            nodes: {},
             bindings: [],
-            editorText: ""
+            editorText: "",
+            uid: 0
         };
     },
     addNode: function(node) {
         this.setState({
-            nodes: this.state.nodes.concat([node])
+            nodes: update(this.state.nodes, {
+                [this.state.uid.toString()]: {$set: node}
+            })
         });
-        return this.state.nodes.length - 1;
+
+        return this.state.uid++;
     },
     addBinding: function(inputNodeID, inputPortName, outputNodeID, outputPortName) {
         const inputNode = nodes[inputNodeID];
