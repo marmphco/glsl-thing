@@ -2,6 +2,8 @@ var React = require('React');
 var Node = require('./gt-node.jsx');
 var PortTypes = require('../lib/gt-port.js').PortType;
 var NodeTypes = require('../lib/gt-node-types.js');
+var NodeViewModel = require('./gt-node-view-model.js');
+//var Binding = require('gt-binding.js')
 
 var Workspace = React.createClass({
     propTypes: {
@@ -24,12 +26,18 @@ var Workspace = React.createClass({
     },
     componentWillMount: function() {
         this.state.viewData = this.props.nodes.map(node => {
-            return {
+            return new NodeViewModel(node);/*{
                 x: Math.random() * 400,
                 y: Math.random() * 400,
                 width: 140,
-                height: 140
-            }
+                height: 140,
+                inputPortPosition: function(name) {
+                    return node.inputPortNames().indexOf(name) * 20 + 20;
+                },
+                outputPortPosition: function(name) {
+                    return node.outputPortNames().indexOf(name) * 20 + 20;
+                }
+            }*/
         });
     },
     handleMouseDown: function(event, id) {
@@ -45,11 +53,12 @@ var Workspace = React.createClass({
     handleNodeMouseDown: function(event, id) {
         this.props.onNodeSelected(this.props.nodes[id]);
 
+        var nodeViewPosition = this.state.viewData[id].offset;
         this.setState({
             dragging: true,
             draggingID: id,
-            mouseOffsetX: event.clientX - this.state.viewData[id].x,
-            mouseOffsetY: event.clientY - this.state.viewData[id].y
+            mouseOffsetX: event.clientX - nodeViewPosition.x,
+            mouseOffsetY: event.clientY - nodeViewPosition.y
         });
         event.stopPropagation();
     },
@@ -61,11 +70,11 @@ var Workspace = React.createClass({
     },
     handleMouseMove: function(event) {
         if (this.state.dragging) {
-            var viewData = this.state.viewData;
-            viewData[this.state.draggingID].x = event.clientX - this.state.mouseOffsetX;
-            viewData[this.state.draggingID].y = event.clientY - this.state.mouseOffsetY;
+            var nodeViewData = this.state.viewData[this.state.draggingID];
+            nodeViewData.offset.x = event.clientX - this.state.mouseOffsetX;
+            nodeViewData.offset.y = event.clientY - this.state.mouseOffsetY;
             this.setState({
-                viewData: viewData
+                viewData: this.state.viewData
             })
         }
         else if (this.state.panning) {
@@ -78,10 +87,14 @@ var Workspace = React.createClass({
     getBindingPath: function(binding) {
         var inputViewData = this.state.viewData[binding.input.id];
         var outputViewData = this.state.viewData[binding.output.id];
-        return 'M' + inputViewData.x +
-               ' ' + inputViewData.y +
-               'L' + (outputViewData.x + outputViewData.width) +
-               ' ' + (outputViewData.y);
+
+        var inputPortPosition = inputViewData.inputPortPosition(binding.input.port);
+        var outputPortPosition = outputViewData.outputPortPosition(binding.output.port);
+
+        return 'M' + (inputViewData.offset.x + inputPortPosition.x) +
+               ' ' + (inputViewData.offset.y + inputPortPosition.y) +
+               'L' + (outputViewData.offset.x + outputPortPosition.x) +
+               ' ' + (outputViewData.offset.y + outputPortPosition.y);
     },
     render: function() {
         return (
@@ -93,26 +106,17 @@ var Workspace = React.createClass({
 
                 <g transform={'translate(' + this.state.globalOffsetX + ',' + this.state.globalOffsetY + ')'}>                    
                     {this.props.nodes.map((node, index) => {
-                        /*if (node.type() == (PortTypes.String + NodeTypes.ValueNode)) {
-                            return <TextNode key={index}
-                                             node={node}
-                                             id={index}
-                                             viewData={this.state.viewData[index]} 
-                                             onMouseDown={this.handleNodeMouseDown}
-                                             onMouseUp={this.handleNodeMouseUp} 
-                                             updateText={(newText) => {node.setValue(newText);}}/>
-                        }
-                        else {*/
                             return <Node key={index}
                                          node={node}
                                          id={index}
                                          viewData={this.state.viewData[index]}
                                          onMouseDown={this.handleNodeMouseDown}
                                          onMouseUp={this.handleNodeMouseUp} />
-                       // }
                     })}
                     
                     {this.props.bindings.map((binding, index) => {
+                        /*return <Binding source={this.state.node[binding.input.id]}
+                                        dest={this.state.viewData[binding.input.id]}*/
                         return <path stroke='black' d={this.getBindingPath(binding)} />
                     })}
                 </g>

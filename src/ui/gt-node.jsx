@@ -1,13 +1,12 @@
 var React = require('react');
-
-var makeTranslation = state => {
-   return 'translate(' + state.x + ',' + state.y + ')'
-};
+var Vector2 = require('./gt-vector2.js');
+var NodeModel = require('../lib/gt-node.js')
+var NodeViewModel = require('./gt-node-view-model.js');
 
 var Node = React.createClass({
    propTypes: {
-      node: React.PropTypes.object,
-      viewData: React.PropTypes.object,
+      node: React.PropTypes.instanceOf(NodeModel),
+      viewData: React.PropTypes.instanceOf(NodeViewModel),
       id: React.PropTypes.number,
       onMouseDown: React.PropTypes.func,
       onMouseUp: React.PropTypes.func,
@@ -21,25 +20,53 @@ var Node = React.createClass({
    handleMouseUp: function(event) {
       this.props.onMouseUp(event, this.props.id);
    },
+   makeTranslation: offset => {
+      return 'translate(' + offset.x + ',' + offset.y + ')'
+   },
    render: function() {
       return (
-         <g transform={makeTranslation(this.props.viewData)}
+         <g transform={this.makeTranslation(this.props.viewData.offset)}
             onMouseDown={this.handleMouseDown}
             onMouseUp={this.handleMouseUp}>
-            <rect x='0' y='0' width={this.props.viewData.width} height={this.props.viewData.height} fill='#dddddd'></rect>
+            
+            <rect x='0'
+                  y='0'
+                  width={this.props.viewData.size.x}
+                  height={this.props.viewData.size.y}
+                  fill='#dddddd'>
+            </rect>
+
             {this.props.node.inputPortNames().map((portName, index) => {
+
+               const portPosition = this.props.viewData.inputPortPosition(portName);
                return (
-                  <text key={index} x='0' y={index * 20 + 20} textAnchor='start'>
-                     {portName}
-                  </text>
+                  <g>
+                     <circle cx={portPosition.x} cy={portPosition.y} r="4">
+                     </circle>
+                     <text key={index}
+                           x={portPosition.x + 8}
+                           y={portPosition.y}
+                           textAnchor='start'>
+                        {portName}
+                     </text>
+                  </g>
                );
             })}
 
             {this.props.node.outputPortNames().map((portName, index) => {
+
+               const portPosition = this.props.viewData.outputPortPosition(portName);
                return (
-                  <text key={index} x={this.props.viewData.width} y={index * 20 + 20} textAnchor='end'>
-                     {portName}
-                  </text>
+                  <g>
+                     <circle cx={portPosition.x} cy={portPosition.y} r="4">
+                     </circle>
+                     <text key={index}
+                           x={portPosition.x - 8}
+                           y={portPosition.y}
+                           textAnchor='end'>
+                        {portName}
+                     </text>
+                  </g>
                );
             })}
 

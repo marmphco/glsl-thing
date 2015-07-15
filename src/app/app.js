@@ -123,7 +123,7 @@ window.onload = function() {
                console.log('dfadfsadfs');
                document.getElementById('output').src = GLSLThing.dataURLWithTexture(gl, renderNode.outputPort('renderedImage').value());
               // document.body.appendChild(image);
-            }, 0);
+            }, 500); // artificial delay
          }
       };
 
