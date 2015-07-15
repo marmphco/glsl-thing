@@ -1,4 +1,4 @@
-var React = require('React');
+var React = require('react');
 /*var AceEditor = require('react-ace');
 var Workspace = require('../ui/gt-workspace.jsx');
 var NodeTypes = require('../lib/gt-node-types.js');

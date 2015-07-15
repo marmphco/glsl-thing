@@ -1,4 +1,5 @@
-var React = require('React/addons');
+var React = require('react');
+var update = require('react/lib/update');
 var Node = require('./gt-node.jsx');
 var PortTypes = require('../lib/gt-port.js').PortType;
 var NodeTypes = require('../lib/gt-node-types.js');
@@ -27,6 +28,16 @@ var Workspace = React.createClass({
     componentWillMount: function() {
         this.state.viewData = this.props.nodes.map(node => {
             return new NodeViewModel(node);
+        });
+    },
+    componentWillReceiveProps: function(nextProps) {
+        // props.nodes should be an Object to make this easier
+        // nodes should be assigned unique keys
+        if (nextProps.nodes.length > this.state.viewData.length)
+        this.setState({
+            viewData: this.state.viewData.concat([
+                new NodeViewModel(nextProps.nodes[nextProps.nodes.length - 1])
+            ])
         });
     },
     handleMouseDown: function(event, id) {
@@ -60,7 +71,7 @@ var Workspace = React.createClass({
     handleMouseMove: function(event) {
         if (this.state.dragging) {
             const viewData = this.state.viewData;
-            const newViewData = React.addons.update(this.state.viewData, {
+            const newViewData = update(this.state.viewData, {
                 [this.state.draggingID]: {
                     offset: {
                         x: {$set: event.clientX - this.state.mouseOffsetX},

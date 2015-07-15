@@ -6,7 +6,9 @@ module.exports = function(grunt) {
             files: [
                {src: 'html/index.html', dest: 'build/index.html'},
                {src: 'css/*', dest: 'build/'},
-               {src: 'img/*', dest: 'build/'}
+               {src: 'img/*', dest: 'build/'},
+               {src: 'node_modules/bootstrap/dist/css/bootstrap.min.css', dest: 'build/css/bootstrap.min.css'},
+               {src: 'node_modules/bootstrap/dist/js/bootstrap.min.js', dest: 'build/js/bootstrap.min.js'},
             ]
          }
       },
@@ -24,7 +26,7 @@ module.exports = function(grunt) {
       browserify: {
          options: {
             transform: [
-               ['babelify', {'blacklist': 'validation.react'}]
+               ['babelify', {}]
             ]
          },
          build: {
