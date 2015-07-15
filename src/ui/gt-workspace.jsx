@@ -1,4 +1,4 @@
-var React = require('React');
+var React = require('React/addons');
 var Node = require('./gt-node.jsx');
 var PortTypes = require('../lib/gt-port.js').PortType;
 var NodeTypes = require('../lib/gt-node-types.js');
@@ -59,11 +59,18 @@ var Workspace = React.createClass({
     },
     handleMouseMove: function(event) {
         if (this.state.dragging) {
-            var nodeViewData = this.state.viewData[this.state.draggingID];
-            nodeViewData.offset.x = event.clientX - this.state.mouseOffsetX;
-            nodeViewData.offset.y = event.clientY - this.state.mouseOffsetY;
+            const viewData = this.state.viewData;
+            const newViewData = React.addons.update(this.state.viewData, {
+                [this.state.draggingID]: {
+                    offset: {
+                        x: {$set: event.clientX - this.state.mouseOffsetX},
+                        y: {$set: event.clientY - this.state.mouseOffsetY}
+                    }
+                }
+            });
+
             this.setState({
-                viewData: this.state.viewData
+                viewData: newViewData
             })
         }
         else if (this.state.panning) {
