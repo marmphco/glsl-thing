@@ -1,15 +1,21 @@
-var React = require('react');
-var AceEditor = require('react-ace');
-var GLSLThing = require('../lib/glsl-thing.js');
+var React = require('React');
+/*var AceEditor = require('react-ace');
 var Workspace = require('../ui/gt-workspace.jsx');
 var NodeTypes = require('../lib/gt-node-types.js');
 var PortTypes = require('../lib/gt-port.js').PortType;
 
 require('brace/mode/glsl');
-require('brace/theme/solarized_dark');
+require('brace/theme/solarized_dark');*/
+var App = require('../ui/gt-app.jsx');
 
 window.onload = function() {
 
+   var canvas = document.getElementById('canvas');
+   var gl = canvas.getContext('webgl', {
+      preserveDrawingBuffer: true
+   });
+   React.render(<App glContext={gl} />, document.getElementById('react-thing'));
+/*
    var nodes = [];
    var bindings = [];
 
@@ -33,8 +39,7 @@ window.onload = function() {
 
    // get shader source
    var vertexSource = document.getElementById('test-vertex-shader').firstChild.textContent;
-   var fragmentSource = document.getElementById('test-fragment-shader').firstChild
-.textContent;
+   var fragmentSource = document.getElementById('test-fragment-shader').firstChild.textContent;
 
    // create shader source nodes
    var vshSourceNode = new GLSLThing.ValueNode(GLSLThing.Port.PortType.String);
@@ -151,5 +156,5 @@ window.onload = function() {
       }
       render();
 
-   }, 0);
+   }, 0);*/
 }

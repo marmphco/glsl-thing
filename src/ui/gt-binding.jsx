@@ -5,8 +5,8 @@ var Binding = React.createClass({
     propTypes: {
         input: React.PropTypes.instanceOf(NodeViewModel),
         output: React.PropTypes.instanceOf(NodeViewModel),
-        inputPortName: React.PropTypes.String,
-        outputPortName: React.PropTypes.String,
+        inputPortName: React.PropTypes.string,
+        outputPortName: React.PropTypes.string,
     },
     render: function() {
 
