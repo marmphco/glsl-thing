@@ -40,13 +40,15 @@ var InputPort = function(node, type) {
          _provider = outputPort;
          _provider.addReceiver(self);
          self.markDirty();
+         return true;
       }
       else {
          console.warn(
             "Incompatible port types in binding: "
             + outputPort.type()
             + " => "
-            + _type)
+            + _type);
+         return false;
       }
    };
 

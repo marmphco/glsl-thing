@@ -45,14 +45,14 @@ var App = React.createClass({
         const outputNode = this.state.nodes[outputNodeID];
         const outputPort = outputNode.outputPort(outputPortName);
 
-        inputPort.bindTo(outputPort);
-
-        this.setState({
-            bindings: this.state.bindings.concat([{
-                input: {id: inputNodeID, port: inputPortName},
-                output: {id: outputNodeID, port: outputPortName}
-            }])
-        });
+        if (inputPort.bindTo(outputPort)) {
+            this.setState({
+                bindings: this.state.bindings.concat([{
+                    input: {id: inputNodeID, port: inputPortName},
+                    output: {id: outputNodeID, port: outputPortName}
+                }])
+            });
+        }
     },
     handleAddNode: function(key) {
         console.log(key);
