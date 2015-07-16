@@ -52,6 +52,12 @@ var Node = React.createClass({
                   width={this.props.viewData.size.x}
                   height={this.props.viewData.size.y}
                   className='gt-node-base' />
+            <text x={this.props.viewData.size.x / 2}
+                  y='20'
+                  textAnchor='middle'
+                  className='gt-port-label'>
+               {this.props.node.type()}
+            </text>
 
             {this.props.node.inputPortNames().map((portName, index) => {
 
