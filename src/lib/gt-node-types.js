@@ -5,5 +5,6 @@ module.exports = {
     RenderNode: "RenderNode",
     ShaderNode: "ShaderNode",
     ValueNode: "ValueNode",
+    ImageOutputNode: "ImageOutputNode",
     Node: "Node"
 }

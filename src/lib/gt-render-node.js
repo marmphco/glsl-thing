@@ -30,7 +30,7 @@ var uniformSuffix = function(gl, type) {
 var RenderNode = function(gl) {
    var meshPort = new port.InputPort(this, port.PortType.Mesh);
    var programPort = new port.InputPort(this, port.PortType.Program);
-   var imagePort = new port.OutputPort(this, port.PortType.SAMPLER_2D)
+   var imagePort = new port.OutputPort(this, gl.SAMPLER_2D)
 
    this._dirty = false;
    this._inputPorts = {

@@ -2,14 +2,22 @@
     position: fixed;
     left: 0;
     right: 600px;
-    top: 0;
+    top: 34px;
     bottom: 0;
 }
 
 .gt-shader-editor {
     position: fixed;
+    width: 600px;
+    top: 200px;
+    bottom: 0;
+    right: 0;
+}
+
+.gt-viewer {
+    position: fixed;
     right: 0;
     width: 600px;
+    height: 200px;
     top: 0;
-    bottom: 0;
 }

@@ -1,27 +1,6 @@
 <html>
    <head>
       <title>GLSL Creator Test</title>
-      <script id="test-vertex-shader" type="x-shader/x-vertex" src="default.vsh">
-      attribute lowp vec4 iPosition;
-      attribute lowp vec4 iNormal;
-
-      varying lowp vec4 vPosition;
-
-        void main(void) {
-           vec4 x = iNormal;
-           vPosition = iPosition;
-           gl_Position = iPosition;
-        }
-      </script>
-      <script id="test-fragment-shader" type="x-shader/x-fragment" src="default.fsh">
-        varying lowp vec4 vPosition;
-        uniform sampler2D texture0;
-        uniform lowp float test;
-
-        void main(void) {
-           gl_FragColor = vec4(vPosition.xyz, 1.0) + test * texture2D(texture0, vPosition.xy);
-        }
-      </script>
       <script type="text/javascript" src="js/glsl-thing.min.js"></script>
       <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
       <link rel="stylesheet" type="text/css" href="css/app.css">
@@ -29,7 +8,6 @@
    <body>
       <canvas id="canvas" width="640" height="480" style="display: none">It don't load right!</canvas>
       <img id="pusheen" src="img/pusheen.png" style="display: none;">
-      <img id="output" src="">
       <div id="react-thing"></div>
    </body>
 </html>

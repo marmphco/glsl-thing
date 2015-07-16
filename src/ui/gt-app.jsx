@@ -1,57 +1,20 @@
 var React = require('react');
 var update = require('react/lib/update');
 var AceEditor = require('react-ace');
-var Workspace = require('../ui/gt-workspace.jsx');
 var GLSLThing = require('../lib/glsl-thing.js');
 var NodeTypes = require('../lib/gt-node-types.js');
 var PortTypes = require('../lib/gt-port.js').PortType;
+
+var Workspace = require('./gt-workspace.jsx');
+var NodeConstructors = require('./gt-node-constructors.js');
+
 var DropdownButton = require('react-bootstrap').DropdownButton;
 var MenuItem = require('react-bootstrap').MenuItem;
+var ButtonToolbar = require('react-bootstrap').ButtonToolbar;
 var Button = require('react-bootstrap').Button;
 
 require('brace/mode/glsl');
 require('brace/theme/solarized_dark');
-
-var nodeConstructors = {
-    'Source': (gl) => {
-        let node = new GLSLThing.ValueNode(PortTypes.String);
-        node.setValue("shader");
-        return node;
-    },
-    'Scalar': (gl) => {
-        return new GLSLThing.ValueNode(PortTypes.Number);
-    },
-    'Mesh': (gl) => {
-        // default placeholder square mesh for now
-        var vertices = new Float32Array([
-            -1.0, -1.0, 0.0,
-            1.0, -1.0, 0.0,
-            -1.0, 1.0, 0.0,
-            1.0, 1.0, 0.0
-        ]);
-        var indices = new Uint16Array([0, 1, 2, 3]);
-
-        return new GLSLThing.MeshNode(gl, vertices, indices, gl.TRIANGLE_STRIP);
-    },
-    'Image': (gl) => {
-        // PlaceHolder
-        let node = new GLSLThing.ValueNode(PortTypes.String);
-        node.setValue("placeholder image node");
-        return node;
-    },
-    'VertexShader': (gl) => {
-        return new GLSLThing.ShaderNode(gl, gl.VERTEX_SHADER);
-    },
-    'FragmentShader': (gl) => {
-        return new GLSLThing.ShaderNode(gl, gl.FRAGMENT_SHADER);
-    },
-    'Program': (gl) => {
-        return new GLSLThing.ProgramNode(gl);
-    },
-    'Render': (gl) => {
-        return new GLSLThing.RenderNode(gl);
-    }
-};
 
 var App = React.createClass({
     propTypes: {
@@ -63,6 +26,7 @@ var App = React.createClass({
             bindings: [],
             editorText: '',
             selectedNode: null,
+            viewerImageData: '',
             uid: 0
         };
     },
@@ -92,7 +56,7 @@ var App = React.createClass({
     },
     handleAddNode: function(key) {
         console.log(key);
-        this.addNode(nodeConstructors[key](this.props.glContext));
+        this.addNode(NodeConstructors[key](this.props.glContext));
     },
     handleNodeSelected: function(node) {
         switch (node.type()) {
@@ -107,7 +71,9 @@ var App = React.createClass({
             case NodeTypes.RenderNode:
                 const texture = node.outputPort('renderedImage').value();
                 const dataURL = GLSLThing.dataURLWithTexture(this.props.glContext, texture);
-                document.getElementById('output').src = dataURL;
+                this.setState({
+                    viewerImageData: dataURL
+                });
             default: break;
         }
     },
@@ -121,13 +87,28 @@ var App = React.createClass({
         this.addBinding(inputNodeID, inputPortName, outputNodeID, outputPortName);
     },
     handleEditorChanged: function(newValue) {
-        if (this.state.selectedNode) {
-            this.state.selectedNode.setValue(newValue);
-         }
+        this.setState({
+            editorText: newValue
+        });
+    },
+    commitSourceEdits: function() {
+        this.state.selectedNode.setValue(this.state.editorText);
+        this.forceUpdate();
     },
     render: function() {
         return (
             <div>
+                <ButtonToolbar>
+                    <DropdownButton title="Add Node" onSelect={this.handleAddNode}>
+                        {Object.keys(NodeConstructors).map(key => {
+                            return <MenuItem key={key} eventKey={key}>{key}</MenuItem>
+                        })}
+                    </DropdownButton>
+                    <Button onClick={this.commitSourceEdits}
+                            disabled={!this.state.selectedNode}>
+                        Commit Source Edits
+                    </Button>
+                </ButtonToolbar>
                 <div className='gt-workspace'>
                     <Workspace nodes={this.state.nodes}
                                bindings={this.state.bindings} 
@@ -135,6 +116,7 @@ var App = React.createClass({
                                onNodeDeselected={this.handleNodeDeselected}
                                onPortsConnected={this.handlePortsConnected} />
                 </div>
+                <img className='gt-viewer' src={this.state.viewerImageData} />
                 <div className='gt-shader-editor'>
                     <AceEditor mode='glsl'
                                theme='solarized_dark'
@@ -144,11 +126,6 @@ var App = React.createClass({
                                value={this.state.editorText}
                                onChange={this.handleEditorChanged} />
                 </div>
-                <DropdownButton bsStyle="default" title="Add Node" onSelect={this.handleAddNode}>
-                    {Object.keys(nodeConstructors).map(key => {
-                        return <MenuItem key={key} eventKey={key}>{key}</MenuItem>
-                    })}
-                </DropdownButton>
             </div>
         );
     }

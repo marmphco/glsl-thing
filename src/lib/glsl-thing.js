@@ -10,6 +10,7 @@ module.exports = {
    RenderNode: require('./gt-render-node.js'),
    ShaderNode: require('./gt-shader-node.js'),
    ValueNode: require('./gt-value-node.js'),
+   ImageOutputNode: require('./gt-image-output-node.js'),
    Context: function(element) {
       var gl = this.gl = element.getContext("webgl", {
          preserveDrawingBuffer: true

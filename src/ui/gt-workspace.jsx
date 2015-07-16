@@ -6,6 +6,7 @@ var NodeTypes = require('../lib/gt-node-types.js');
 var NodeViewModel = require('./gt-node-view-model.js');
 var Binding = require('./gt-binding.jsx');
 var Vector2 = require('./gt-vector2.js');
+var nodeComponents = require('./gt-node-components.js');
 
 var Workspace = React.createClass({
     propTypes: {
@@ -148,17 +149,19 @@ var Workspace = React.createClass({
 
                 <g transform={'translate(' + this.state.globalOffset.x + ',' + this.state.globalOffset.y + ')'}>                    
                     {Object.keys(this.props.nodes).map((key) => {
-                            const node = this.props.nodes[key];
-                            return <Node key={key}
-                                         node={node}
-                                         id={key}
-                                         viewData={this.state.viewData[key]}
-                                         onMouseDown={this.handleNodeMouseDown}
-                                         onMouseUp={this.handleNodeMouseUp}
-                                         onInputPortMouseDown={this.handleInputPortMouseDown}
-                                         onInputPortMouseUp={this.handleInputPortMouseUp}
-                                         onOutputPortMouseDown={this.handleOutputPortMouseDown}
-                                         onOutputPortMouseUp={this.handleOutputPortMouseUp} />
+                        const node = this.props.nodes[key];
+                        //const NodeComponent = nodeComponents[node.type()];
+                        return <Node key={key}
+                                     node={node}
+                                     id={key}
+                                     viewData={this.state.viewData[key]}
+                                     onMouseDown={this.handleNodeMouseDown}
+                                     onMouseUp={this.handleNodeMouseUp}
+                                     onInputPortMouseDown={this.handleInputPortMouseDown}
+                                     onInputPortMouseUp={this.handleInputPortMouseUp}
+                                     onOutputPortMouseDown={this.handleOutputPortMouseDown}
+                                     onOutputPortMouseUp={this.handleOutputPortMouseUp}>
+                                </Node>
                     })}
                     
                     {this.props.bindings.map((binding, index) => {

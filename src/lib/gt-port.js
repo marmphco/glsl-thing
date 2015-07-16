@@ -42,7 +42,7 @@ var InputPort = function(node, type) {
          self.markDirty();
       }
       else {
-         console.log(
+         console.warn(
             "Incompatible port types in binding: "
             + outputPort.type()
             + " => "
