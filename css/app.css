@@ -24,6 +24,7 @@
 
 .gt-node-base {
     fill: #dddddd;
+    opacity: 0.9;
 }
 
 .gt-port {

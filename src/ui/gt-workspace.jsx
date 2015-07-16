@@ -23,7 +23,7 @@ var Workspace = React.createClass({
             panning: false,
             globalOffset: new Vector2(),
             dragOffset: new Vector2(),
-            mouseOffset: new Vector2(),
+            dragOrigin: new Vector2(),
             draggedNodeID: 0,
             draggedPortName: '',
             draggedPortPolarity: 'input',
@@ -75,11 +75,18 @@ var Workspace = React.createClass({
         event.stopPropagation();
     },
     handleInputPortMouseDown: function(event, id, portName) {
+        let elementOffset = React.findDOMNode(this.refs.svg).getBoundingClientRect();
         this.setState({
             draggingPort: true,
             draggedNodeID: id,
             draggedPortName: portName,
-            draggedPortPolarity: 'input'
+            draggedPortPolarity: 'input',
+            dragOrigin: new Vector2(
+                event.clientX - elementOffset.left,
+                event.clientY - elementOffset.top),
+            dragOffset: new Vector2(
+                event.clientX - elementOffset.left,
+                event.clientY - elementOffset.top),
         });
     },
     handleInputPortMouseUp: function(event, id, portName) {
@@ -93,11 +100,18 @@ var Workspace = React.createClass({
         });
     },
     handleOutputPortMouseDown: function(event, id, portName) {
+        let elementOffset = React.findDOMNode(this.refs.svg).getBoundingClientRect();
         this.setState({
             draggingPort: true,
             draggedNodeID: id,
             draggedPortName: portName,
-            draggedPortPolarity: 'output'
+            draggedPortPolarity: 'output',
+            dragOrigin: new Vector2(
+                event.clientX - elementOffset.left,
+                event.clientY - elementOffset.top),
+            dragOffset: new Vector2(
+                event.clientX - elementOffset.left,
+                event.clientY - elementOffset.top),
         });
     },
     handleOutputPortMouseUp: function(event, id, portName) {
@@ -136,18 +150,43 @@ var Workspace = React.createClass({
         }
 
         if (this.state.draggingPort) {
-
+            let elementOffset = React.findDOMNode(this.refs.svg).getBoundingClientRect();
+            this.setState({
+                dragOffset: new Vector2(
+                    event.clientX - elementOffset.left,
+                    event.clientY - elementOffset.top)
+            })
         }
     },
     render: function() {
+        let path = '';
+        if (this.state.draggingPort) {
+            path = 'M' + (this.state.dragOrigin.x - this.state.globalOffset.x) +
+                ' ' + (this.state.dragOrigin.y - this.state.globalOffset.y) +
+                'L' + (this.state.dragOffset.x - this.state.globalOffset.x) +
+                ' ' + (this.state.dragOffset.y - this.state.globalOffset.y);
+        }
+
         return (
-            <svg style={{'width': '100%', 'height': '100%'}}
+            <svg ref="svg"
+                 style={{'width': '100%', 'height': '100%'}}
                  xmlns='http://www.w3.org/2000/svg'
                  onMouseDown={this.handleMouseDown}
                  onMouseUp={this.handleMouseUp}
                  onMouseMove={this.handleMouseMove}>
 
                 <g transform={'translate(' + this.state.globalOffset.x + ',' + this.state.globalOffset.y + ')'}>                    
+                    
+                    <path d={path} className='gt-binding' />
+
+                    {this.props.bindings.map((binding, index) => {
+                        return <Binding key={index}
+                                        input={this.state.viewData[binding.input.id]}
+                                        output={this.state.viewData[binding.output.id]}
+                                        inputPortName={binding.input.port}
+                                        outputPortName={binding.output.port} />
+                    })}             
+
                     {Object.keys(this.props.nodes).map((key) => {
                         const node = this.props.nodes[key];
                         //const NodeComponent = nodeComponents[node.type()];
@@ -162,14 +201,6 @@ var Workspace = React.createClass({
                                      onOutputPortMouseDown={this.handleOutputPortMouseDown}
                                      onOutputPortMouseUp={this.handleOutputPortMouseUp}>
                                 </Node>
-                    })}
-                    
-                    {this.props.bindings.map((binding, index) => {
-                        return <Binding key={index}
-                                        input={this.state.viewData[binding.input.id]}
-                                        output={this.state.viewData[binding.output.id]}
-                                        inputPortName={binding.input.port}
-                                        outputPortName={binding.output.port} />
                     })}
                 </g>
             </svg>
