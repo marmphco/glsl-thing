@@ -1,4 +1,4 @@
-# GLSL Creator
+# GLSL Creator Thing
 
 Nodes, wires, and pipelines.
 

@@ -2,7 +2,7 @@
   "name": "glsl-thing",
   "version": "0.0.1",
   "description": "A fun toy for playing with GLSL",
-  "main": "glsl-thing.js",
+  "main": "src/lib/glsl-thing.js",
   "scripts": {
     "test": "not yet"
   },
@@ -17,9 +17,6 @@
   "author": "Matthew Jee",
   "license": "ISC",
   "private": true,
-  "peerDependencies": {
-
-  },
   "devDependencies": {
     "babelify": "^6.1.2",
     "bootstrap": "^3.3.5",
