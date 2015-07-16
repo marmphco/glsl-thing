@@ -4,7 +4,9 @@ var PortType = {
    "FragmentShader": "FragmentShader",
    "VertexShader": "VertexShader",
    "ShaderProgram": "Program",
-   "Mesh": "Mesh"
+   "Mesh": "Mesh",
+   "Attribute": "Attribute",
+   "Any": "Any" // weak checking, for prototyping
 };
 
 /* InputPort */

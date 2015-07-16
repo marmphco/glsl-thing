@@ -19,12 +19,22 @@ module.exports = {
    dataURLWithTexture: function(gl, texture) {
       gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-      var quad = new Mesh(gl, new Float32Array([
-         -1.0, -1.0,
-          1.0, -1.0,
-         -1.0,  1.0,
-          1.0,  1.0
-      ]), new Uint16Array([0, 1, 2, 3]), gl.TRIANGLE_STRIP);
+      var quad = new Mesh(gl, gl.TRIANGLE_STRIP, 'indices',  {
+         indices: [0, 1, 2, 3],
+         positions: [
+            -1.0, -1.0,
+             1.0, -1.0,
+            -1.0,  1.0,
+             1.0,  1.0
+         ]
+      },  {
+         iPos: {
+            key: 'positions',
+            dimension: 2,
+            stride: 8,
+            offset: 0
+         }
+      });
 
       var vShader = gl.createShader(gl.VERTEX_SHADER);
       gl.shaderSource(vShader, "\
@@ -51,25 +61,18 @@ module.exports = {
       gl.linkProgram(program);
 
       gl.useProgram(program);
-      quad.use();
-
-      var positionLoc = gl.getAttribLocation(program, "iPos");
-      gl.enableVertexAttribArray(positionLoc);
-      gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 8, 0);
 
       var textureLoc = gl.getUniformLocation(program, "uTex");
       gl.uniform1i(textureLoc, 0);
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, texture);
 
-      quad.draw();
+      quad.draw(program);
 
       gl.deleteShader(vShader);
       gl.deleteShader(fShader);
       gl.deleteProgram(program);
       quad.delete();
-
-      gl.disableVertexAttribArray(positionLoc);
 
       return gl.canvas.toDataURL();
    }

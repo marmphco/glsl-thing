@@ -94,6 +94,10 @@ var RenderNode = function(gl) {
       return ports;
    }
 
+   var generateAttributePorts = function(program, self) {
+
+   }
+
    this.inputPortNames = function(name) {
       return Object.keys(this._inputPorts).concat(Object.keys(this._uniformPorts));
    }
@@ -109,8 +113,7 @@ var RenderNode = function(gl) {
       // only render if program is valid
       if (gl.getProgramParameter(program, gl.LINK_STATUS)) {
          gl.useProgram(program);
-         mesh.use();
-
+         
          // generate input ports for new uniforms
          this._uniformPorts = generateUniformPorts(program, this);
 
@@ -134,20 +137,13 @@ var RenderNode = function(gl) {
             }
          }
 
-         // hardcoded attributes
-         var positionLoc = gl.getAttribLocation(program, "iPosition");
-         gl.enableVertexAttribArray(positionLoc);
-         gl.vertexAttribPointer(positionLoc, 3, gl.FLOAT, false, 12, 0);
-
          gl.bindFramebuffer(gl.FRAMEBUFFER, _framebuffer);
 
          gl.clearColor(0.0, 0.0, 0.0, 1.0)
          gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-         mesh.draw();
+         mesh.draw(program);
          
          gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-
-         gl.disableVertexAttribArray(positionLoc);
 
          imagePort.exportValue(_outputTexture);
       }

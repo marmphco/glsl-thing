@@ -12,15 +12,22 @@ module.exports = {
     },
     'Mesh': (gl) => {
         // default placeholder square mesh for now
-        var vertices = new Float32Array([
-            -1.0, -1.0, 0.0,
-            1.0, -1.0, 0.0,
-            -1.0, 1.0, 0.0,
-            1.0, 1.0, 0.0
-        ]);
-        var indices = new Uint16Array([0, 1, 2, 3]);
-
-        return new GLSLThing.MeshNode(gl, vertices, indices, gl.TRIANGLE_STRIP);
+        return new GLSLThing.MeshNode(gl, gl.TRIANGLE_STRIP, 'indices', {
+            indices: [0, 1, 2, 3],
+            positions: [
+                -1.0, -1.0, 0.0,
+                1.0, -1.0, 0.0,
+                -1.0, 1.0, 0.0,
+                1.0, 1.0, 0.0
+            ]
+        }, {
+            positions: {
+                key: 'positions',
+                dimension: 3,
+                stride: 12,
+                offset: 0
+            }
+        });
     },
     'Image': (gl) => {
         // PlaceHolder
