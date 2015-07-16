@@ -22,7 +22,7 @@ var Binding = React.createClass({
             ' ' + (output.offset.y + outputPortPosition.y);
 
         return (
-            <path stroke='black' d={path} />
+            <path stroke='black' d={path} className='gt-binding' />
         );
     }
 });

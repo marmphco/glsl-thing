@@ -53,8 +53,7 @@ var Node = React.createClass({
                   y='0'
                   width={this.props.viewData.size.x}
                   height={this.props.viewData.size.y}
-                  fill='#dddddd'>
-            </rect>
+                  className='gt-node-base' />
 
             {this.props.node.inputPortNames().map((portName, index) => {
 
@@ -63,12 +62,14 @@ var Node = React.createClass({
                   <g key={index}>
                      <circle cx={portPosition.x}
                              cy={portPosition.y}
-                             r="4"
+                             r="6"
                              onMouseDown={this.handleInputPortMouseDown.bind(this, portName)}
-                             onMouseUp={this.handleInputPortMouseUp.bind(this, portName)} />
+                             onMouseUp={this.handleInputPortMouseUp.bind(this, portName)}
+                             className='gt-port' />
                      <text x={portPosition.x + 8}
                            y={portPosition.y}
-                           textAnchor='start'>
+                           textAnchor='start'
+                           classNAme='gt-port-label' >
                         {portName}
                      </text>
                   </g>
@@ -82,12 +83,14 @@ var Node = React.createClass({
                   <g key={index}>
                      <circle cx={portPosition.x}
                              cy={portPosition.y}
-                             r="4"
+                             r="6"
                              onMouseDown={this.handleOutputPortMouseDown.bind(this, portName)}
-                             onMouseUp={this.handleOutputPortMouseUp.bind(this, portName)} />
+                             onMouseUp={this.handleOutputPortMouseUp.bind(this, portName)}
+                             className='gt-port' />
                      <text x={portPosition.x - 8}
                            y={portPosition.y}
-                           textAnchor='end'>
+                           textAnchor='end'
+                           classNAme='gt-port-label' >
                         {portName}
                      </text>
                   </g>

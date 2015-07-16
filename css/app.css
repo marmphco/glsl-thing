@@ -9,7 +9,7 @@
 .gt-shader-editor {
     position: fixed;
     width: 600px;
-    top: 200px;
+    top: 450px;
     bottom: 0;
     right: 0;
 }
@@ -18,6 +18,24 @@
     position: fixed;
     right: 0;
     width: 600px;
-    height: 200px;
+    height: 450px;
     top: 0;
+}
+
+.gt-node-base {
+    fill: #dddddd;
+}
+
+.gt-port {
+    fill: #606060;
+}
+
+.gt-port-label {
+
+}
+
+.gt-binding {
+    stroke-width: 6px;
+    stroke: #3A96C7;
+    stroke-linecap: round;
 }
