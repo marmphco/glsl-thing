@@ -40,7 +40,7 @@ class Mesh {
    delete() {
       // delete buffers
       for (let bufferName in this._buffers) {
-         gl.deleteBuffer(this._buffers[bufferName]);
+         this._gl.deleteBuffer(this._buffers[bufferName]);
       }
    }
 
