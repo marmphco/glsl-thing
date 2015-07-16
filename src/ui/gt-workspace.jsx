@@ -4,7 +4,8 @@ var Node = require('./gt-node.jsx');
 var PortTypes = require('../lib/gt-port.js').PortType;
 var NodeTypes = require('../lib/gt-node-types.js');
 var NodeViewModel = require('./gt-node-view-model.js');
-var Binding = require('./gt-binding.jsx')
+var Binding = require('./gt-binding.jsx');
+var Vector2 = require('./gt-vector2.js');
 
 var Workspace = React.createClass({
     propTypes: {
@@ -19,10 +20,9 @@ var Workspace = React.createClass({
             draggingNode: false,
             draggingPort: false,
             panning: false,
-            globalOffsetX: 0,
-            globalOffsetY: 0,
-            mouseOffsetX: 0,
-            mouseOffsetY: 0,
+            globalOffset: new Vector2(),
+            dragOffset: new Vector2(),
+            mouseOffset: new Vector2(),
             draggedNodeID: 0,
             draggedPortName: '',
             draggedPortPolarity: 'input',
@@ -41,10 +41,11 @@ var Workspace = React.createClass({
         }
     },
     handleMouseDown: function(event, id) {
+        const offsetX = event.clientX - this.state.globalOffset.x;
+        const offsetY = event.clientY - this.state.globalOffset.y;
         this.setState({
             panning: true,
-            mouseOffsetX: event.clientX - this.state.globalOffsetX,
-            mouseOffsetY: event.clientY - this.state.globalOffsetY
+            dragOffset: new Vector2(offsetX, offsetY)
         });
     },
     handleMouseUp: function(event, id) {
@@ -58,11 +59,12 @@ var Workspace = React.createClass({
         this.props.onNodeSelected(this.props.nodes[id]);
 
         var nodeViewPosition = this.state.viewData[id].offset;
+        var offsetX = event.clientX - nodeViewPosition.x;
+        var offsetY = event.clientY - nodeViewPosition.y;
         this.setState({
             draggingNode: true,
             draggedNodeID: id,
-            mouseOffsetX: event.clientX - nodeViewPosition.x,
-            mouseOffsetY: event.clientY - nodeViewPosition.y
+            dragOffset: new Vector2(offsetX, offsetY)
         });
         event.stopPropagation();
     },
@@ -113,8 +115,8 @@ var Workspace = React.createClass({
             const newViewData = update(this.state.viewData, {
                 [this.state.draggedNodeID]: {
                     offset: {
-                        x: {$set: event.clientX - this.state.mouseOffsetX},
-                        y: {$set: event.clientY - this.state.mouseOffsetY}
+                        x: {$set: event.clientX - this.state.dragOffset.x},
+                        y: {$set: event.clientY - this.state.dragOffset.y}
                     }
                 }
             });
@@ -125,9 +127,10 @@ var Workspace = React.createClass({
         }
         
         if (this.state.panning) {
+            const offsetX = event.clientX - this.state.dragOffset.x;
+            const offsetY = event.clientY - this.state.dragOffset.y;
             this.setState({
-                globalOffsetX: event.clientX - this.state.mouseOffsetX,
-                globalOffsetY: event.clientY - this.state.mouseOffsetY
+                globalOffset: new Vector2(offsetX, offsetY)
             })
         }
 
@@ -143,7 +146,7 @@ var Workspace = React.createClass({
                  onMouseUp={this.handleMouseUp}
                  onMouseMove={this.handleMouseMove}>
 
-                <g transform={'translate(' + this.state.globalOffsetX + ',' + this.state.globalOffsetY + ')'}>                    
+                <g transform={'translate(' + this.state.globalOffset.x + ',' + this.state.globalOffset.y + ')'}>                    
                     {Object.keys(this.props.nodes).map((key) => {
                             const node = this.props.nodes[key];
                             return <Node key={key}
