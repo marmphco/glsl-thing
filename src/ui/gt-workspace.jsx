@@ -169,7 +169,7 @@ var Workspace = React.createClass({
                                         input={this.state.viewData[binding.input.id]}
                                         output={this.state.viewData[binding.output.id]}
                                         inputPortName={binding.input.port}
-                                        outputPortNam={binding.output.port} />
+                                        outputPortName={binding.output.port} />
                     })}
                 </g>
             </svg>

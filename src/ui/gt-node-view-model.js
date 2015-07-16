@@ -15,14 +15,14 @@ class NodeViewModel {
                 0,
                 node.inputPortNames().indexOf(portName) * 20 + 20
             );
-        }
+        };
 
         this.outputPortPosition = function(portName) {
             return new Vector2(
                 this.size.x,
                 node.outputPortNames().indexOf(portName) * 20 + 20
             );
-        }
+        };
     }    
 }
 
