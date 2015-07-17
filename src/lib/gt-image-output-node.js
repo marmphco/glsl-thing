@@ -2,6 +2,7 @@ const Node = require('./gt-node.js');
 const Port = require('./gt-port.js');
 const NodeTypes = require('./gt-node-types.js');
 
+// currently unused
 const ImageOutputNode = function(gl) {
    let texturePort = new Port.InputPort(this, gl.SAMPLER_2D);
 

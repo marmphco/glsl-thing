@@ -2,23 +2,17 @@ var Node = require("./gt-node.js");
 var Port = require("./gt-port.js");
 var NodeTypes = require('./gt-node-types.js');
 
-var ValueNode = function(type) {
-   var valuePort = new Port.OutputPort(this, type);
-
-   this._dirty = false;
-   this._inputPorts = {};
-   this._outputPorts = {
-      "value": valuePort
-   };
-
-   this.type = () => (NodeTypes.ValueNode);
-
-   this.setValue = function(value) {
-      valuePort.exportValue(value);
+module.exports = class ValueNode extends Node{
+   constructor(type) {
+      super();
+      this._outputPorts['value'] = new Port.OutputPort(this, type);
    }
 
-   this.evaluate = function() {}
-}
-ValueNode.prototype = new Node();
+   type() {
+      return NodeTypes.ValueNode;
+   }
 
-module.exports = ValueNode;
+   setValue(value) {
+      this.outputPort('value').exportValue(value);
+   }
+};

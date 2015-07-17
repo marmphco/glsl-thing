@@ -2,41 +2,43 @@ var port = require("./gt-port.js")
 var Node = require("./gt-node.js")
 var NodeTypes = require('./gt-node-types.js');
 
-var ProgramNode = function(gl) {
-   var vertexShaderPort = new port.InputPort(this, port.PortType.VertexShader);
-   var fragmentShaderPort = new port.InputPort(this, port.PortType.FragmentShader);
-   var programPort = new port.OutputPort(this, port.PortType.Program);
+module.exports = class ProgramNode extends Node {
+   constructor(gl) {
+      super();
 
-   var _program = gl.createProgram();
+      this._inputPorts['vertexShader'] = new port.InputPort(this, port.PortType.VertexShader);
+      this._inputPorts['fragmentShader'] = new port.InputPort(this, port.PortType.FragmentShader);
+      this._outputPorts['program'] = new port.OutputPort(this, port.PortType.Program);
 
-   this._dirty = false;
-   this._inputPorts = {
-      "vertexShader": vertexShaderPort,
-      "fragmentShader": fragmentShaderPort
-   };
-   this._outputPorts = {
-      "program": programPort
-   };
+      this._gl = gl;
+      this._program = gl.createProgram();
+   }
 
-   this.type = () => NodeTypes.ProgramNode;
+   type() {
+      return NodeTypes.ProgramNode;
+   }
 
-   this.evaluate = function() {
+   evaluate() {
+      const gl = this._gl;
+
       // remove attached shaders
-      var shaders = gl.getAttachedShaders(_program);
-      shaders.forEach(function(shader) {
-         gl.detachShader(_program, shader);
+      let shaders = gl.getAttachedShaders(this._program);
+      shaders.forEach((shader) => {
+         gl.detachShader(this._program, shader);
       });
 
       // attach new shaders
-      gl.attachShader(_program, vertexShaderPort.value());
-      gl.attachShader(_program, fragmentShaderPort.value());
+      gl.attachShader(this._program, this.inputPort('vertexShader').value());
+      gl.attachShader(this._program, this.inputPort('fragmentShader').value());
 
-      gl.linkProgram(_program);
-      console.log("Program Link Errors: " + gl.getProgramInfoLog(_program));
+      gl.linkProgram(this._program);
 
-      programPort.exportValue(_program);
+      const infoLog = gl.getProgramInfoLog(this._program);
+      if (infoLog.length > 0) {
+         console.warn('Program Link Errors: ', infoLog);
+      }
+      else {
+         this.outputPort('program').exportValue(this._program);
+      }
    }
-}
-ProgramNode.prototype = new Node();
-
-module.exports = ProgramNode;
+};

@@ -8,7 +8,7 @@ module.exports = {
         return node;
     },
     'Scalar': (gl) => {
-        return new GLSLThing.ValueNode(PortTypes.Number);
+        return new GLSLThing.ValueNode(gl.FLOAT);
     },
     'Mesh': (gl) => {
         // default placeholder square mesh for now

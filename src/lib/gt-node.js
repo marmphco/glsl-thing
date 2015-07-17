@@ -1,36 +1,47 @@
 var NodeTypes = require('./gt-node-types.js');
 
-var Node = function() {
+class Node {
+   constructor() {
+      this._inputPorts = {};
+      this._outputPorts = {};
+      this._dirty = false;
+   }
 
-   this.type = () => NodeTypes.Node;
+   type() {
+      return NodeTypes.Node;
+   }
 
-   this.inputPortNames = function(name) {
+   inputPortNames() {
       return Object.keys(this._inputPorts);
    }
 
-   this.outputPortNames = function(name) {
+   outputPortNames() {
       return Object.keys(this._outputPorts);
    }
 
-   this.inputPort = function(name) {
+   inputPort(name) {
       return this._inputPorts[name];
    }
 
-   this.outputPort = function(name) {
+   outputPort(name) {
       return this._outputPorts[name];
    }
 
-   this.markDirty = function() {
+   markDirty() {
       this._dirty = true;
    }
 
-   this.clean = function() {
-      console.log('cleaning: ' + this + ', dirty?: ' + this._dirty)
+   clean() {
+      console.log(this + ' is dirty?: ' + this._dirty)
       if (this._dirty) {
          console.log('evaluating: ' + this);
          this.evaluate();
       }
       this._dirty = false;
+   }
+
+   evaluate() {
+      // empty implementation
    }
 }
 

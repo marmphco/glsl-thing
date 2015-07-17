@@ -3,20 +3,17 @@ var Node = require("./gt-node.js");
 var port = require("./gt-port.js");
 var NodeTypes = require('./gt-node-types.js');
 
-var MeshNode = function(gl, drawMode, elementArrayKey, arrays, attributes) {
-   var meshPort = new port.OutputPort(this, port.PortType.Mesh);
-   meshPort.exportValue(new Mesh(gl, drawMode, elementArrayKey, arrays, attributes));
+module.exports = class MeshNode extends Node {
+    constructor(gl, drawMode, elementArrayKey, arrays, attributes) {
+        super();
 
-   this._dirty = false;
-   this._inputPorts = {};
-   this._outputPorts = {
-      "mesh": meshPort,
-   };
+        this._outputPorts['mesh'] = new port.OutputPort(this, port.PortType.Mesh);
 
-   this.type = () => NodeTypes.MeshNode;
+        const mesh = new Mesh(gl, drawMode, elementArrayKey, arrays, attributes);
+        this.outputPort('mesh').exportValue(mesh);
+    }
 
-   this.evaluate = function() {}
-}
-MeshNode.prototype = new Node();
-
-module.exports = MeshNode;
+    type() {
+        return NodeTypes.MeshNode;
+    }
+};

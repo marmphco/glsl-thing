@@ -25,105 +25,76 @@ var uniformSuffix = function(gl, type) {
    }
 }
 
-/* RenderNode */
+module.exports = class RenderNode extends Node {
+   constructor(gl) {
+      super();
 
-var RenderNode = function(gl) {
-   var meshPort = new port.InputPort(this, port.PortType.Mesh);
-   var programPort = new port.InputPort(this, port.PortType.Program);
-   var imagePort = new port.OutputPort(this, gl.SAMPLER_2D)
+      this._inputPorts['mesh'] = new port.InputPort(this, port.PortType.Mesh);
+      this._inputPorts['program'] = new port.InputPort(this, port.PortType.Program);
+      this._outputPorts['renderedImage'] = new port.OutputPort(this, gl.SAMPLER_2D);
 
-   this._dirty = false;
-   this._inputPorts = {
-      "mesh": meshPort,
-      "program": programPort
-   };
-   this._outputPorts = {
-      "renderedImage": imagePort
-   };
-   this._uniformPorts = {};
+      this._uniformPorts = {};
 
-   this.type = () => NodeTypes.RenderNode;
+      this._gl = gl;
 
-   // set up output framebuffer and texture
-   var _outputTexture = gl.createTexture();
-   gl.bindTexture(gl.TEXTURE_2D, _outputTexture);
-   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 640, 480, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+      // set up output color buffer texture
+      this._outputTexture = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, this._outputTexture);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 640, 480, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 
-   var _depthBuffer = gl.createRenderbuffer();
-   gl.bindRenderbuffer(gl.RENDERBUFFER, _depthBuffer);
-   gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, 640, 480);
+      // set up output depth buffer
+      this._depthBuffer = gl.createRenderbuffer();
+      gl.bindRenderbuffer(gl.RENDERBUFFER, this._depthBuffer);
+      gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, 640, 480);
 
-   var _framebuffer = gl.createFramebuffer();
-   gl.bindFramebuffer(gl.FRAMEBUFFER, _framebuffer);
-   gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, _outputTexture, 0);
-   gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, _depthBuffer);
+      // set up output framebuffer
+      this._framebuffer = gl.createFramebuffer();
+      gl.bindFramebuffer(gl.FRAMEBUFFER, this._framebuffer);
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this._outputTexture, 0);
+      gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, this._depthBuffer);
 
-   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-   gl.bindRenderbuffer(gl.RENDERBUFFER, null);
-   gl.bindTexture(gl.TEXTURE_2D, null);
-
-   var generateUniformPorts = function(program, self) {
-      // get uniform count
-      var uniformCount = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
-
-      var ports = {};
-      for (var loc = 0; loc < uniformCount; loc++) {
-         var uniform = gl.getActiveUniform(program, loc);
-
-         // merge ports
-         if (self._uniformPorts.hasOwnProperty(uniform.name)) {
-            ports[uniform.name] = self._uniformPorts[uniform.name];
-            ports[uniform.name].setType(uniform.type);
-         }
-         else {
-            ports[uniform.name] = new port.InputPort(self, uniform.type);
-         }
-      }
-
-      // clean up unused ports
-      for (var portName in self._uniformPorts) {
-         if (!ports.hasOwnProperty(portName)) {
-            self._uniformPorts[portName].unbind();
-         }
-      }
-
-      return ports;
+      // unbind everything
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+      gl.bindTexture(gl.TEXTURE_2D, null);
    }
 
-   var generateAttributePorts = function(program, self) {
-
+   type() {
+      return NodeTypes.RenderNode;
    }
 
-   this.inputPortNames = function(name) {
-      return Object.keys(this._inputPorts).concat(Object.keys(this._uniformPorts));
+   inputPortNames() {
+      return super.inputPortNames().concat(Object.keys(this._uniformPorts));
    }
 
-   this.inputPort = function(name) {
-      return this._inputPorts[name] || this._uniformPorts[name];
+   inputPort(name) {
+      return super.inputPort(name) || this._uniformPorts[name];
    }
 
-   this.evaluate = function() {
-      var mesh = meshPort.value();
-      var program = programPort.value();
+   evaluate() {
+      const gl = this._gl;
+
+      const mesh = this.inputPort('mesh').value();
+      const program = this.inputPort('program').value();
 
       // only render if program is valid
       if (gl.getProgramParameter(program, gl.LINK_STATUS)) {
          gl.useProgram(program);
-         
+
          // generate input ports for new uniforms
-         this._uniformPorts = generateUniformPorts(program, this);
+         this._uniformPorts = this._generateUniformPorts(program);
 
          // set up uniforms
-         var textureUnit = 0;
-         for (var name in this._uniformPorts) {
-            var loc = gl.getUniformLocation(program, name);
-            var port = this._uniformPorts[name];
-            var functionId = "uniform" + uniformSuffix(gl, port.type());
-            var uniformFunc = gl[functionId];
+         let textureUnit = 0;
+         for (let name in this._uniformPorts) {
+            const loc = gl.getUniformLocation(program, name);
+            const port = this._uniformPorts[name];
+            const functionId = 'uniform' + uniformSuffix(gl, port.type());
+            const uniformFunc = gl[functionId];
 
             // wont work for matrices and stuff
             if (port.type() == gl.SAMPLER_2D) {
@@ -137,7 +108,7 @@ var RenderNode = function(gl) {
             }
          }
 
-         gl.bindFramebuffer(gl.FRAMEBUFFER, _framebuffer);
+         gl.bindFramebuffer(gl.FRAMEBUFFER, this._framebuffer);
 
          gl.clearColor(0.0, 0.0, 0.0, 1.0)
          gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -145,10 +116,37 @@ var RenderNode = function(gl) {
          
          gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-         imagePort.exportValue(_outputTexture);
+         this.outputPort('renderedImage').exportValue(this._outputTexture);
       }
    }
-}
-RenderNode.prototype = new Node();
 
-module.exports = RenderNode;
+   _generateUniformPorts(program) {
+      const gl = this._gl;
+
+       // get uniform count
+      const uniformCount = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+
+      let ports = {};
+      for (let loc = 0; loc < uniformCount; loc++) {
+         const uniform = gl.getActiveUniform(program, loc);
+
+         // merge ports
+         if (this._uniformPorts.hasOwnProperty(uniform.name)) {
+            ports[uniform.name] = this._uniformPorts[uniform.name];
+            ports[uniform.name].setType(uniform.type);
+         }
+         else {
+            ports[uniform.name] = new port.InputPort(this, uniform.type);
+         }
+      }
+
+      // clean up unused ports
+      for (var portName in this._uniformPorts) {
+         if (!ports.hasOwnProperty(portName)) {
+            this._uniformPorts[portName].unbind();
+         }
+      }
+
+      return ports;
+   }
+};
