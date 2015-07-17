@@ -28,7 +28,7 @@ module.exports = {
              1.0,  1.0
          ]
       },  {
-         iPos: {
+         positions: {
             key: 'positions',
             dimension: 2,
             stride: 8,
@@ -38,11 +38,11 @@ module.exports = {
 
       var vShader = gl.createShader(gl.VERTEX_SHADER);
       gl.shaderSource(vShader, "\
-         attribute lowp vec2 iPos;\
+         attribute lowp vec2 aPos;\
          varying lowp vec2 vTexCoord;\
          void main(void) {\
-            gl_Position = vec4(iPos, 0.0, 1.0);\
-            vTexCoord = (iPos + vec2(1.0)) * 0.5;\
+            gl_Position = vec4(aPos, 0.0, 1.0);\
+            vTexCoord = (aPos + vec2(1.0)) * 0.5;\
          }");
       gl.compileShader(vShader);
 
@@ -67,7 +67,10 @@ module.exports = {
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, texture);
 
-      quad.draw(program);
+      var aPosLoc = gl.getAttribLocation(program, 'aPos');
+      (quad.attributeBindingFunction('positions'))(aPosLoc);
+      quad.draw();
+      gl.disableVertexAttribArray(aPosLoc);
 
       gl.deleteShader(vShader);
       gl.deleteShader(fShader);

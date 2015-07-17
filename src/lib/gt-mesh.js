@@ -44,17 +44,21 @@ class Mesh {
       }
    }
 
-   draw(program) {
+   attributeNames() {
+      return Object.keys(this._attributes);
+   }
+
+   /* 
+      Returns a function that binds an attribute of the mesh
+      to a vertex attribute of a shader program.
+   */
+   attributeBindingFunction(name) {
       const gl = this._gl;
+      const attribute = this._attributes[name];
+      const buffer = this._buffers[attribute.key];
 
-      // enable vertex attribute arrays
-      for (let attributeName in this._attributes) {
-         let attribute = this._attributes[attributeName];
-
-         let buffer = this._buffers[attribute.key];
+      return function(attributeLoc) {
          gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-
-         let attributeLoc = gl.getAttribLocation(program, attributeName);
          gl.enableVertexAttribArray(attributeLoc);
          gl.vertexAttribPointer(attributeLoc,
                                 attribute.dimension,
@@ -63,6 +67,10 @@ class Mesh {
                                 attribute.stride,
                                 attribute.offset);
       }
+   }
+
+   draw() {
+      const gl = this._gl;
 
       // bind element array buffer
       let elementBuffer = this._buffers[this._elementArrayKey];
@@ -70,12 +78,6 @@ class Mesh {
 
       // do the actual drawing
       gl.drawElements(this._drawMode, this._elementCount, gl.UNSIGNED_SHORT, 0);
-
-      // disable vertex attribute arrays
-      for (let attributeName in this._attributes) {
-         let attributeLoc = gl.getAttribLocation(program, attributeName);
-         gl.disableVertexAttribArray(attributeLoc);
-      }
    }
 }
 

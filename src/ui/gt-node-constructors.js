@@ -19,10 +19,22 @@ module.exports = {
                 1.0, -1.0, 0.0,
                 -1.0, 1.0, 0.0,
                 1.0, 1.0, 0.0
+            ],
+            colors: [
+                1.0, 0.0, 0.0,
+                0.0, 1.0, 0.0,
+                0.0, 0.0, 1.0,
+                0.2, 0.5, 0.1
             ]
         }, {
             positions: {
                 key: 'positions',
+                dimension: 3,
+                stride: 12,
+                offset: 0
+            },
+            colors: {
+                key: 'colors',
                 dimension: 3,
                 stride: 12,
                 offset: 0
