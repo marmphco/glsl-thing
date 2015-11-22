@@ -167,8 +167,14 @@ var Workspace = React.createClass({
     render: function() {
         let path = '';
         if (this.state.draggingPort) {
-            path = 'M' + (this.state.dragOrigin.x - this.state.globalOffset.x) +
-                ' ' + (this.state.dragOrigin.y - this.state.globalOffset.y) +
+            const sourceViewData = this.state.viewData[this.state.draggedNodeID];
+
+            const sourcePortPosition = this.state.draggedPortPolarity == 'input' ?
+                sourceViewData.inputPortPosition(this.state.draggedPortName)
+                : sourceViewData.outputPortPosition(this.state.draggedPortName);
+
+            path = 'M' + (sourcePortPosition.x + sourceViewData.offset.x - this.state.globalOffset.x) +
+                ' ' + (sourcePortPosition.y + sourceViewData.offset.y - this.state.globalOffset.y) +
                 'L' + (this.state.dragOffset.x - this.state.globalOffset.x) +
                 ' ' + (this.state.dragOffset.y - this.state.globalOffset.y);
         }

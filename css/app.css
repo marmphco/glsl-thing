@@ -27,6 +27,7 @@
     stroke: #cccccc;
     stroke-width: 4;
     opacity: 0.9;
+    cursor: move;
 }
 
 .gt-node-highlighted {
@@ -35,7 +36,10 @@
 }
 
 .gt-port {
-    fill: #606060;
+    stroke: #606060;
+    stroke-width: 2;
+    fill: #ffffff;
+    cursor: pointer;
 }
 
 .gt-port-label {
