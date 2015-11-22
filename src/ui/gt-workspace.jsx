@@ -173,8 +173,8 @@ var Workspace = React.createClass({
                 sourceViewData.inputPortPosition(this.state.draggedPortName)
                 : sourceViewData.outputPortPosition(this.state.draggedPortName);
 
-            path = 'M' + (sourcePortPosition.x + sourceViewData.offset.x - this.state.globalOffset.x) +
-                ' ' + (sourcePortPosition.y + sourceViewData.offset.y - this.state.globalOffset.y) +
+            path = 'M' + (sourcePortPosition.x + sourceViewData.offset.x) +
+                ' ' + (sourcePortPosition.y + sourceViewData.offset.y) +
                 'L' + (this.state.dragOffset.x - this.state.globalOffset.x) +
                 ' ' + (this.state.dragOffset.y - this.state.globalOffset.y);
         }
