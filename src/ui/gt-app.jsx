@@ -25,7 +25,7 @@ var App = React.createClass({
             nodes: {},
             bindings: [],
             editorText: '',
-            selectedNode: null,
+            selectedNodeID: null,
             viewerImageData: '',
             uid: 0
         };
@@ -38,6 +38,20 @@ var App = React.createClass({
         });
 
         return this.state.uid++;
+    },
+    removeNodeWithID: function(id) {
+        // remove any bindings concerning this node
+        this.state.bindings.forEach((binding) => {
+            if (binding.input.id == id || binding.output.id == id) {
+                this.removeBinding(binding.input.id, binding.input.port);
+            }
+        });
+
+        // remove the node
+        delete this.state.nodes[id];
+        this.setState({
+            nodes: this.state.nodes,
+        });
     },
     addBinding: function(inputNodeID, inputPortName, outputNodeID, outputPortName) {
         const inputNode = this.state.nodes[inputNodeID];
@@ -54,25 +68,42 @@ var App = React.createClass({
             });
         }
     },
+    removeBinding: function(inputNodeID, inputPortName) {
+        this.state.nodes[inputNodeID].inputPort(inputPortName).unbind();
+
+        // slow but easy to comprehend
+        this.setState((previousState, currentProps) => {
+            return {
+                bindings: previousState.bindings.filter((binding) => {
+                    return binding.input.id != inputNodeID || binding.input.port != inputPortName;
+                })
+            }
+        });
+    },
     handleAddNode: function(key) {
         console.log(key);
         this.addNode(NodeConstructors[key](this.props.glContext));
     },
-    handleNodeSelected: function(node) {
+    handleRemoveNode: function() {
+        this.removeNodeWithID(this.state.selectedNodeID);
+        this.setState({
+            selectedNodeID: null
+        });
+    },
+    handleNodeSelected: function(id) {
+        const node = this.state.nodes[id];
         switch (node.type()) {
             case NodeTypes.ValueNode:
                 if (node.outputPort('value').type() == PortTypes.String) {
                     this.setState({
                         editorText: node.outputPort('value').value(),
-                        selectedNode: node,
-                        viewerImageData: ""
+                        viewerImageData: ''
                     });
                 }
                 else {
                     this.setState({
                         editorText: '',
-                        selectedNode: node,
-                        viewerImageData: ""
+                        viewerImageData: ''
                     });
                 }
                 break;
@@ -84,11 +115,15 @@ var App = React.createClass({
                 });
             default: break;
         }
+
+        this.setState({
+            selectedNodeID: id
+        });
     },
     handleBackgroundSelected: function() {
         this.setState({
             editorText: '',
-            selectedNode: null,
+            selectedNodeID: null,
             viewerImageData: ""
         })
     },
@@ -101,7 +136,8 @@ var App = React.createClass({
         });
     },
     commitSourceEdits: function() {
-        this.state.selectedNode.setValue(this.state.editorText);
+        let node = this.state.nodes[this.state.selectedNodeID];
+        node.setValue(this.state.editorText);
         this.forceUpdate();
     },
     render: function() {
@@ -113,20 +149,26 @@ var App = React.createClass({
                             return <MenuItem key={key} eventKey={key}>{key}</MenuItem>
                         })}
                     </DropdownButton>
+                    <Button onClick={this.handleRemoveNode}
+                            disabled={!this.state.selectedNodeID}>
+                        Remove
+                    </Button>
                     <Button onClick={this.commitSourceEdits}
-                            disabled={!this.state.selectedNode}>
+                            disabled={!this.state.selectedNodeID}>
                         Commit Source Edits
                     </Button>
                 </ButtonToolbar>
                 <div className='gt-workspace'>
                     <Workspace nodes={this.state.nodes}
                                bindings={this.state.bindings}
-                               selectedNode={this.state.selectedNode}
+                               selectedNode={this.state.nodes[this.state.selectedNodeID]}
                                onNodeSelected={this.handleNodeSelected}
                                onBackgroundSelected={this.handleBackgroundSelected}
                                onPortsConnected={this.handlePortsConnected} />
                 </div>
-                <img className='gt-viewer' src={this.state.viewerImageData} />
+                <img className='gt-viewer'
+                     alt='Render Viewer'
+                     src={this.state.viewerImageData} />
                 <div className='gt-shader-editor'>
                     <AceEditor mode='glsl'
                                theme='solarized_dark'

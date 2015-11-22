@@ -32,15 +32,19 @@ var Workspace = React.createClass({
         };
     },
     componentWillReceiveProps: function(nextProps) {
+        let newViewData = {};
         for (let key in nextProps.nodes) {
-            if (!(key in this.state.viewData)) {
-                this.setState({
-                    viewData: update(this.state.viewData, {
-                        [key]: {$set: new NodeViewModel(nextProps.nodes[key])}
-                    })
-                });
+            if (key in this.state.viewData) {
+                newViewData[key] = this.state.viewData[key];
+            }
+            else {
+                newViewData[key] = new NodeViewModel(nextProps.nodes[key]);
             }
         }
+
+        this.setState({
+            viewData: newViewData
+        });
     },
     handleMouseDown: function(event, id) {
         this.props.onBackgroundSelected();
@@ -60,7 +64,7 @@ var Workspace = React.createClass({
         });
     },
     handleNodeMouseDown: function(event, id) {
-        this.props.onNodeSelected(this.props.nodes[id]);
+        this.props.onNodeSelected(id);
 
         var nodeViewPosition = this.state.viewData[id].offset;
         var offsetX = event.clientX - nodeViewPosition.x;
