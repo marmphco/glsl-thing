@@ -8,7 +8,7 @@ var Vector2 = require('./gt-vector2.js');
 class NodeViewModel {
     constructor(node: Node) {
         this.offset = new Vector2(Math.random() * 400, Math.random() * 400);
-        this.size = new Vector2(140, 140);
+        this.size = new Vector2(200, 160);
 
         this.inputPortPosition = function(portName) {
             return new Vector2(
