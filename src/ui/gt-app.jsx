@@ -64,7 +64,15 @@ var App = React.createClass({
                 if (node.outputPort('value').type() == PortTypes.String) {
                     this.setState({
                         editorText: node.outputPort('value').value(),
-                        selectedNode: node
+                        selectedNode: node,
+                        viewerImageData: ""
+                    });
+                }
+                else {
+                    this.setState({
+                        editorText: '',
+                        selectedNode: node,
+                        viewerImageData: ""
                     });
                 }
                 break;
@@ -77,10 +85,11 @@ var App = React.createClass({
             default: break;
         }
     },
-    handleNodeDeselected: function(node) {
+    handleBackgroundSelected: function() {
         this.setState({
             editorText: '',
-            selectedNode: null
+            selectedNode: null,
+            viewerImageData: ""
         })
     },
     handlePortsConnected: function(inputNodeID, inputPortName, outputNodeID, outputPortName) {
@@ -113,7 +122,7 @@ var App = React.createClass({
                     <Workspace nodes={this.state.nodes}
                                bindings={this.state.bindings} 
                                onNodeSelected={this.handleNodeSelected}
-                               onNodeDeselected={this.handleNodeDeselected}
+                               onBackgroundSelected={this.handleBackgroundSelected}
                                onPortsConnected={this.handlePortsConnected} />
                 </div>
                 <img className='gt-viewer' src={this.state.viewerImageData} />

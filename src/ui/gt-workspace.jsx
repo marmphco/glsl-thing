@@ -13,7 +13,7 @@ var Workspace = React.createClass({
         nodes: React.PropTypes.object,
         bindings: React.PropTypes.array,
         onNodeSelected: React.PropTypes.func,
-        onNodeDeselected: React.PropTypes.func,
+        onBackgroundSelected: React.PropTypes.func,
         onPortsConnected: React.PropTypes.func
     },
     getInitialState: () => {
@@ -42,6 +42,8 @@ var Workspace = React.createClass({
         }
     },
     handleMouseDown: function(event, id) {
+        this.props.onBackgroundSelected();
+
         const offsetX = event.clientX - this.state.globalOffset.x;
         const offsetY = event.clientY - this.state.globalOffset.y;
         this.setState({
@@ -70,7 +72,6 @@ var Workspace = React.createClass({
         event.stopPropagation();
     },
     handleNodeMouseUp: function(event, id) {
-        this.props.onNodeSelected(this.props.nodes[id]);
         this.setState({draggingNode: false});
         event.stopPropagation();
     },
