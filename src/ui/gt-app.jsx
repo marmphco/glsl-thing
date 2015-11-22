@@ -140,6 +140,13 @@ var App = React.createClass({
         node.setValue(this.state.editorText);
         this.forceUpdate();
     },
+    serializeNodeGraph: function() {
+        console.log(JSON.stringify({
+            'nodes': this.state.nodes,
+            'bindings': this.state.bindings,
+            'workspace': {}
+        }, null, '  '));
+    },
     render: function() {
         return (
             <div>
@@ -156,6 +163,9 @@ var App = React.createClass({
                     <Button onClick={this.commitSourceEdits}
                             disabled={!this.state.selectedNodeID}>
                         Commit Source Edits
+                    </Button>
+                    <Button onClick={this.serializeNodeGraph}>
+                        Save
                     </Button>
                 </ButtonToolbar>
                 <div className='gt-workspace'>

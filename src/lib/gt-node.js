@@ -43,6 +43,14 @@ class Node {
    evaluate() {
       // empty implementation
    }
+
+   toJSON() {
+      return {
+         'type': this.type(),
+         'inputPortNames': this.inputPortNames(),
+         'outputPortNames': this.outputPortNames(),
+      }
+   }
 }
 
 module.exports = Node;

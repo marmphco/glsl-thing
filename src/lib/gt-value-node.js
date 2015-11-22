@@ -15,4 +15,10 @@ module.exports = class ValueNode extends Node{
    setValue(value) {
       this.outputPort('value').exportValue(value);
    }
+
+   toJSON() {
+      var json = super.toJSON();
+      json['value'] = this.outputPort('value').value();
+      return json;
+   }
 };

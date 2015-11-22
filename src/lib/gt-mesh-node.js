@@ -22,4 +22,10 @@ module.exports = class MeshNode extends Node {
     type() {
         return NodeTypes.MeshNode;
     }
+
+    toJSON() {
+        var json = super.toJSON();
+        json['mesh'] = this.outputPort('mesh').value().toJSON();
+        return json;
+    }
 };

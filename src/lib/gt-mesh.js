@@ -18,6 +18,9 @@ class Mesh {
       this._elementArrayKey = elementArrayKey;
       this._elementCount = arrays[elementArrayKey].length;
 
+      // purely for serialization
+      this._arrays = arrays;
+
       this._buffers = {};
       // set up vertex array buffers
       for (let attributeName in attributes) {
@@ -78,6 +81,15 @@ class Mesh {
 
       // do the actual drawing
       gl.drawElements(this._drawMode, this._elementCount, gl.UNSIGNED_SHORT, 0);
+   }
+
+   toJSON() {
+      return {
+         'drawMode': this._drawMode,
+         'elementArrayKey': this._elementArrayKey,
+         'arrays': this._arrays,
+         'attributes': this._attributes
+      };
    }
 }
 
