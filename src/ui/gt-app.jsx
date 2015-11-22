@@ -120,7 +120,8 @@ var App = React.createClass({
                 </ButtonToolbar>
                 <div className='gt-workspace'>
                     <Workspace nodes={this.state.nodes}
-                               bindings={this.state.bindings} 
+                               bindings={this.state.bindings}
+                               selectedNode={this.state.selectedNode}
                                onNodeSelected={this.handleNodeSelected}
                                onBackgroundSelected={this.handleBackgroundSelected}
                                onPortsConnected={this.handlePortsConnected} />

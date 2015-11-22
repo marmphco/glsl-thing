@@ -12,6 +12,7 @@ var Workspace = React.createClass({
     propTypes: {
         nodes: React.PropTypes.object,
         bindings: React.PropTypes.array,
+        selectedNode: React.PropTypes.object,
         onNodeSelected: React.PropTypes.func,
         onBackgroundSelected: React.PropTypes.func,
         onPortsConnected: React.PropTypes.func
@@ -195,6 +196,7 @@ var Workspace = React.createClass({
                                      node={node}
                                      id={key}
                                      viewData={this.state.viewData[key]}
+                                     highlighted={this.props.selectedNode == node}
                                      onMouseDown={this.handleNodeMouseDown}
                                      onMouseUp={this.handleNodeMouseUp}
                                      onInputPortMouseDown={this.handleInputPortMouseDown}

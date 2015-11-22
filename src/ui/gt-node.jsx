@@ -7,6 +7,7 @@ var Node = React.createClass({
    propTypes: {
       node: React.PropTypes.instanceOf(NodeModel),
       viewData: React.PropTypes.instanceOf(NodeViewModel),
+      highlighted: React.PropTypes.bool,
       id: React.PropTypes.string,
       onMouseDown: React.PropTypes.func,
       onMouseUp: React.PropTypes.func,
@@ -49,9 +50,11 @@ var Node = React.createClass({
             
             <rect x='0'
                   y='0'
+                  rx='4'
+                  ry='4'
                   width={this.props.viewData.size.x}
                   height={this.props.viewData.size.y}
-                  className='gt-node-base' />
+                  className={this.props.highlighted ? 'gt-node-base gt-node-highlighted' : 'gt-node-base'} />
             <text x={this.props.viewData.size.x / 2}
                   y='20'
                   textAnchor='middle'

@@ -24,7 +24,14 @@
 
 .gt-node-base {
     fill: #dddddd;
+    stroke: #cccccc;
+    stroke-width: 4;
     opacity: 0.9;
+}
+
+.gt-node-highlighted {
+    stroke: #22aaaa;
+    stroke-width: 4;
 }
 
 .gt-port {
