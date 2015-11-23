@@ -48,10 +48,10 @@ module.exports = {
         return node;
     },
     'VertexShader': (gl) => {
-        return new GLSLThing.ShaderNode(gl, gl.VERTEX_SHADER);
+        return new GLSLThing.ShaderNode(gl, PortTypes.VertexShader);
     },
     'FragmentShader': (gl) => {
-        return new GLSLThing.ShaderNode(gl, gl.FRAGMENT_SHADER);
+        return new GLSLThing.ShaderNode(gl, PortTypes.FragmentShader);
     },
     'Program': (gl) => {
         return new GLSLThing.ProgramNode(gl);

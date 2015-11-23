@@ -26,7 +26,7 @@ var uniformSuffix = function(gl, type) {
 }
 
 module.exports = class RenderNode extends Node {
-   constructor(gl) {
+   constructor(gl, attributePortDescriptors, uniformPortDescriptors) {
       super();
 
       this._inputPorts['mesh'] = new Port.InputPort(this, Port.PortType.Mesh);
@@ -35,6 +35,14 @@ module.exports = class RenderNode extends Node {
 
       this._attributePorts = {};
       this._uniformPorts = {};
+
+      attributePortDescriptors.forEach((attributeDescriptor) => {
+         this._attributePorts[attributeDescriptor['name']] = new Port.InputPort(this, attributeDescriptor['type']);
+      });
+
+      uniformPortDescriptors.forEach((uniformDescriptor) => {
+         this._attributePorts[uniformDescriptor['name']] = new Port.InputPort(this, uniformDescriptor['type']);
+      });
 
       this._gl = gl;
 
@@ -166,6 +174,7 @@ module.exports = class RenderNode extends Node {
       // cleanup unused ports
       for (let portName in this._attributePorts) {
          if (!(portName in ports)) {
+            // this may require a corresponding unbinding at the app level
             this._attributePorts[portName].unbind();
          }
       }
@@ -201,5 +210,23 @@ module.exports = class RenderNode extends Node {
       }
 
       return ports;
+   }
+
+   toJSON() {
+      return {
+         'type': this.type(),
+         'attributePorts': Object.keys(this._attributePorts).map((portName) => {
+            return {
+               'name': portName,
+               'type': this._attributePorts[portName].type()
+            }
+         }),
+         'uniformPorts': Object.keys(this._uniformPorts).map((portName) => {
+            return {
+               'name': portName,
+               'type': this._uniformPorts[portName].type()
+            }
+         }),
+      }
    }
 };

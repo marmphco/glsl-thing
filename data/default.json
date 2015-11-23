@@ -1,0 +1,250 @@
+{
+  "nodes": {
+    "0": {
+      "type": "ValueNode",
+      "valueType": "String",
+      "value": "attribute lowp vec4 aPosition;\nattribute lowp vec4 aColor;\n\nvarying lowp vec4 vColor;\n\nvoid main(void) {\n    vColor = aColor;\n    gl_Position = aPosition;\n}"
+    },
+    "1": {
+      "type": "ValueNode",
+      "valueType": "String",
+      "value": "varying lowp vec4 vColor;\n\nvoid main(void) {\n    gl_FragColor = vColor;\n}"
+    },
+    "2": {
+      "type": "ShaderNode",
+      "shaderType": "VertexShader"
+    },
+    "3": {
+      "type": "ShaderNode",
+      "shaderType": "FragmentShader"
+    },
+    "4": {
+      "type": "ProgramNode"
+    },
+    "5": {
+      "type": "RenderNode",
+      "attributePorts": [
+        {
+          "name": "aPosition",
+          "type": "Attribute"
+        },
+        {
+          "name": "aColor",
+          "type": "Attribute"
+        }
+      ],
+      "uniformPorts": []
+    },
+    "6": {
+      "type": "MeshNode",
+      "mesh": {
+        "drawMode": 5,
+        "elementArrayKey": "indices",
+        "arrays": {
+          "indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "positions": [
+            -1,
+            -1,
+            0,
+            1,
+            -1,
+            0,
+            -1,
+            1,
+            0,
+            1,
+            1,
+            0
+          ],
+          "colors": [
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1,
+            0.2,
+            0.5,
+            0.1
+          ]
+        },
+        "attributes": {
+          "positions": {
+            "key": "positions",
+            "dimension": 3,
+            "stride": 12,
+            "offset": 0
+          },
+          "colors": {
+            "key": "colors",
+            "dimension": 3,
+            "stride": 12,
+            "offset": 0
+          }
+        }
+      }
+    }
+  },
+  "bindings": [
+    {
+      "input": {
+        "id": "2",
+        "port": "source"
+      },
+      "output": {
+        "id": "0",
+        "port": "value"
+      }
+    },
+    {
+      "input": {
+        "id": "3",
+        "port": "source"
+      },
+      "output": {
+        "id": "1",
+        "port": "value"
+      }
+    },
+    {
+      "input": {
+        "id": "5",
+        "port": "program"
+      },
+      "output": {
+        "id": "4",
+        "port": "program"
+      }
+    },
+    {
+      "input": {
+        "id": "4",
+        "port": "vertexShader"
+      },
+      "output": {
+        "id": "2",
+        "port": "shader"
+      }
+    },
+    {
+      "input": {
+        "id": "4",
+        "port": "fragmentShader"
+      },
+      "output": {
+        "id": "3",
+        "port": "shader"
+      }
+    },
+    {
+      "input": {
+        "id": "5",
+        "port": "mesh"
+      },
+      "output": {
+        "id": "6",
+        "port": "mesh"
+      }
+    },
+    {
+      "input": {
+        "id": "5",
+        "port": "aPosition"
+      },
+      "output": {
+        "id": "6",
+        "port": "attr:positions"
+      }
+    },
+    {
+      "input": {
+        "id": "5",
+        "port": "aColor"
+      },
+      "output": {
+        "id": "6",
+        "port": "attr:colors"
+      }
+    }
+  ],
+  "workspace": {
+    "0": {
+      "offset": {
+        "x": 18.2541101872921,
+        "y": 61.53165062516928
+      },
+      "size": {
+        "x": 200,
+        "y": 160
+      }
+    },
+    "1": {
+      "offset": {
+        "x": 15.948879890143871,
+        "y": 271.43772887438536
+      },
+      "size": {
+        "x": 200,
+        "y": 160
+      }
+    },
+    "2": {
+      "offset": {
+        "x": 264.32559541612864,
+        "y": 67.50347302854061
+      },
+      "size": {
+        "x": 200,
+        "y": 160
+      }
+    },
+    "3": {
+      "offset": {
+        "x": 265.7197719216347,
+        "y": 260.75499637424946
+      },
+      "size": {
+        "x": 200,
+        "y": 160
+      }
+    },
+    "4": {
+      "offset": {
+        "x": 510.64138454571366,
+        "y": 274.04291651397943
+      },
+      "size": {
+        "x": 200,
+        "y": 160
+      }
+    },
+    "5": {
+      "offset": {
+        "x": 781.3302920497954,
+        "y": 78.0920241959393
+      },
+      "size": {
+        "x": 200,
+        "y": 160
+      }
+    },
+    "6": {
+      "offset": {
+        "x": 507.996053095907,
+        "y": 72.25025924667716
+      },
+      "size": {
+        "x": 200,
+        "y": 160
+      }
+    }
+  }
+}

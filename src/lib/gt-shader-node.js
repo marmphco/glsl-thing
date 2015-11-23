@@ -5,15 +5,15 @@ var NodeTypes = require('./gt-node-types.js');
 module.exports = class ShaderNode extends Node {
    constructor(gl, type) {
       super();
-      
-      const portType = (type == gl.VERTEX_SHADER) ?
-         port.PortType.VertexShader : port.PortType.FragmentShader;
+
+      const shaderType = type == port.PortType.VertexShader ?
+         gl.VERTEX_SHADER : gl.FRAGMENT_SHADER;
 
       this._inputPorts['source'] = new port.InputPort(this, port.PortType.String);
-      this._outputPorts['shader'] = new port.OutputPort(this, portType);
+      this._outputPorts['shader'] = new port.OutputPort(this, type);
 
       this._gl = gl;
-      this._shader = gl.createShader(type);
+      this._shader = gl.createShader(shaderType);
    }
 
    type() {
@@ -33,5 +33,11 @@ module.exports = class ShaderNode extends Node {
       else {
          this.outputPort('shader').exportValue(this._shader);
       }
+   }
+
+   toJSON() {
+      var json = super.toJSON();
+      json['shaderType'] = this.outputPort('shader').type();
+      return json;
    }
 };

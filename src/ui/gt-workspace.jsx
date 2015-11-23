@@ -13,9 +13,11 @@ var Workspace = React.createClass({
         nodes: React.PropTypes.object,
         bindings: React.PropTypes.array,
         selectedNode: React.PropTypes.object,
+        overrideLayout: React.PropTypes.object,
         onNodeSelected: React.PropTypes.func,
         onBackgroundSelected: React.PropTypes.func,
-        onPortsConnected: React.PropTypes.func
+        onPortsConnected: React.PropTypes.func,
+        onLayoutChanged: React.PropTypes.func,
     },
     getInitialState: () => {
         return {
@@ -32,19 +34,29 @@ var Workspace = React.createClass({
         };
     },
     componentWillReceiveProps: function(nextProps) {
-        let newViewData = {};
-        for (let key in nextProps.nodes) {
-            if (key in this.state.viewData) {
-                newViewData[key] = this.state.viewData[key];
-            }
-            else {
-                newViewData[key] = new NodeViewModel(nextProps.nodes[key]);
-            }
+        if (nextProps.overrideLayout != null) {
+            this.setState({
+                viewData: nextProps.overrideLayout
+            });
         }
+        else {
 
-        this.setState({
-            viewData: newViewData
-        });
+            let newViewData = {};
+            for (let key in nextProps.nodes) {
+                if (key in this.state.viewData) {
+                    newViewData[key] = this.state.viewData[key];
+                }
+                else {
+                    newViewData[key] = new NodeViewModel(nextProps.nodes[key]);
+                }
+            }
+
+            this.setState({
+                viewData: newViewData
+            }, () => {
+                this.props.onLayoutChanged(this.state.viewData);
+            });
+        }
     },
     handleMouseDown: function(event, id) {
         this.props.onBackgroundSelected();
@@ -144,6 +156,8 @@ var Workspace = React.createClass({
 
             this.setState({
                 viewData: newViewData
+            }, () => {
+                this.props.onLayoutChanged(this.state.viewData);
             })
         }
         
@@ -152,6 +166,8 @@ var Workspace = React.createClass({
             const offsetY = event.clientY - this.state.dragOffset.y;
             this.setState({
                 globalOffset: new Vector2(offsetX, offsetY)
+            }, () => {
+                this.props.onLayoutChanged(this.state.viewData);
             })
         }
 

@@ -47,8 +47,6 @@ class Node {
    toJSON() {
       return {
          'type': this.type(),
-         'inputPortNames': this.inputPortNames(),
-         'outputPortNames': this.outputPortNames(),
       }
    }
 }

@@ -18,6 +18,7 @@ module.exports = class ValueNode extends Node{
 
    toJSON() {
       var json = super.toJSON();
+      json['valueType'] = this.outputPort('value').type();
       json['value'] = this.outputPort('value').value();
       return json;
    }
