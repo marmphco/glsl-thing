@@ -1,0 +1,26 @@
+{
+  "name": "glsl-thing",
+  "version": "0.0.2",
+  "description": "A tool for prototyping graphics stuff",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marmphco/glsl-thing.git"
+  },
+  "author": "Matthew Jee",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/marmphco/glsl-thing/issues"
+  },
+  "homepage": "https://github.com/marmphco/glsl-thing#readme",
+  "private": true,
+  "devDependencies": {
+    "del": "^2.1.0",
+    "gulp": "^3.9.0",
+    "gulp-typescript": "^2.9.2",
+    "react": "^0.14.3",
+  }
+}
