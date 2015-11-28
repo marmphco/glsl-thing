@@ -2,7 +2,7 @@
 
 import React = require('react');
 import ReactDOM = require('react-dom');
-import GLSLApp = require('../lib/gt-app');
+import App = require('./app');
 
 window.onload = function() {
     var canvas = document.getElementById('canvas') as HTMLCanvasElement;
@@ -10,5 +10,5 @@ window.onload = function() {
         preserveDrawingBuffer: true
     }) as WebGLRenderingContext;
 
-    ReactDOM.render(<GLSLApp glContext={gl} />, document.getElementById('react-thing'));
+    ReactDOM.render(<App glContext={gl} />, document.getElementById('react-thing'));
 }

@@ -25,7 +25,7 @@ gulp.task('process-js', function() {
     .bundle()
     .pipe(source('glsl-thing.min.js'))
     .pipe(buffer())
-    .pipe(uglify())
+    //.pipe(uglify())
     .pipe(gulp.dest('build/js/'));
 });
 
@@ -37,7 +37,8 @@ gulp.task('process-html', function() {
 gulp.task('process-css', function() {
     return gulp.src([
         'src/css/**/*.css',
-        'node_modules/bootstrap/dist/css/bootstrap.min.css'
+        'node_modules/bootstrap/dist/css/bootstrap.min.css',
+        'node_modules/bootstrap/dist/css/bootstrap.min.css.map'
     ])
     .pipe(gulp.dest('build/css/'))
 });
