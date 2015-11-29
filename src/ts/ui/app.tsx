@@ -66,11 +66,11 @@ export = class App extends React.Component<Properties, State> {
 
                 </div>
                 <img className='gt-viewer'
-                     alt='Render Viewer'
+                     alt='Render Viewer?'
                      src={this.state.viewerImageData} />
                 <div className='gt-shader-editor'>
                 </div>
-                </div>
+            </div>
         );
     }
 }
