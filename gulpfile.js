@@ -16,7 +16,7 @@ gulp.task('clean', function() {
 
 gulp.task('process-js', function() {
     return browserify({
-        entries: ['src/ts/app/app.tsx']
+        entries: ['src/ts/ui/glsl-thing.tsx']
     })
     .plugin(tsify, {
         jsx: 'react',
