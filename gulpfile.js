@@ -89,9 +89,15 @@ gulp.task('build-tests', function() {
         extension: '.js'
     }))
     .pipe(tsc({
-        module: 'commonjs'
+        module: 'commonjs',
     }))
     .pipe(gulp.dest('build/spec'));
+});
+
+gulp.task('clean-tests', function() {
+    return del([
+        'build/spec',
+    ]);
 });
 
 gulp.task('test', ['build-lib', 'build-tests'], function() {
