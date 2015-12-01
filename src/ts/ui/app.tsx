@@ -34,7 +34,7 @@ export = class App extends React.Component<Properties, State> {
 
     handleRemoveNode() {
 
-    }
+    } 
 
     commitSourceEdits() {
 
