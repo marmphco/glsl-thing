@@ -3,22 +3,24 @@ import table = require("./table");
 import Table = table.Table;
 
 interface NodeEvaluator {
-    (inputs: Array<any>): Array<any>;
+    (inputs: Object): Object;
 }
 
-interface PortMap extends Table<PortType> {}
+type PortMap = Table<PortType>; 
 
 export = class Node {
     _inputPorts: PortMap;
     _outputPorts: PortMap;
+    _evaluate: NodeEvaluator;
     
     constructor(inputPorts: PortMap, outputPorts: PortMap, evaluate: NodeEvaluator) {
         this._inputPorts = inputPorts;
         this._outputPorts = outputPorts;
+        this._evaluate = evaluate;
     }
 
-    evaluate(inputCache: Array<any>): Array<any> {
-// maybe pushthis up one level
+    evaluate(inputs: Object): Object {
+        return this._evaluate(inputs);
     }
 
     toJSON(): any {

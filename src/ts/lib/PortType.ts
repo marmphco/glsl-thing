@@ -1,7 +1,9 @@
 enum PortType {
     String,
     Float,
-    Shader,
+    Integer,
+    VertexShader,
+    FragmentShader,
     ShaderProgram
 }
 
