@@ -52,13 +52,12 @@ gulp.task('package-css', function() {
 
 gulp.task('build-ui', function() {
     return gulp.src([
-        'src/ts/ui/*.tsx'
+        'src/ts/ui/*.ts'
     ])
     .pipe(changed('build/ui', {
         extension: '.js'
     }))
     .pipe(tsc({
-        jsx: 'react',
         module: 'commonjs'
     }))
     .pipe(gulp.dest('build/ui'));

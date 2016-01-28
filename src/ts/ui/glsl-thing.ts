@@ -1,7 +1,5 @@
 /// <reference path="../typings/tsd.d.ts" />
 
-import React = require('react');
-import ReactDOM = require('react-dom');
 import App = require('./app');
 
 window.onload = function() {
@@ -10,5 +8,5 @@ window.onload = function() {
         preserveDrawingBuffer: true
     }) as WebGLRenderingContext;
 
-    ReactDOM.render(<App glContext={gl} />, document.getElementById('react-thing'));
+    App(gl, document.getElementById('glsl-thing'));
 }
