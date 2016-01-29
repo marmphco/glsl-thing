@@ -7,6 +7,6 @@ window.onload = function() {
     var gl = canvas.getContext('webgl', {
         preserveDrawingBuffer: true
     }) as WebGLRenderingContext;
-
+    
     App(gl, document.getElementById('glsl-thing'));
 }
