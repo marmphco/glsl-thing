@@ -56,10 +56,11 @@ class ShaderNode implements Node {
         gl.compileShader(shader);
 
         if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+            console.log("Shader Compiled Successfully");
             this._shaderPort.setValue(shader);
         }
         else {
-            console.log(gl.getShaderInfoLog(shader));
+            console.log("Shader Failed to Compile:", gl.getShaderInfoLog(shader));
             gl.deleteShader(shader);
         }
     }

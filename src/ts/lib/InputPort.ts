@@ -9,6 +9,10 @@ class InputPort<T> implements ValueSink<T> {
         this._owner = owner;
     }
 
+    setProvider(provider: ValueSource<T>) {
+        this._provider = provider;
+    }
+
     pushValue(value: T) {
         this._owner.pushValue(value);
     }
