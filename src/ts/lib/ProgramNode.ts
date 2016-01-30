@@ -18,6 +18,13 @@ class ProgramNode implements Node {
         this._gl = gl;
     }
 
+    delete() {
+        const oldProgram = this._programPort.value();
+        if (oldProgram) {
+            this._gl.deleteProgram(oldProgram);
+        }
+    }
+
     vertexShaderPort() {
         return this._vertexShaderPort;
     }
@@ -51,7 +58,7 @@ class ProgramNode implements Node {
         if (oldProgram) {
             gl.deleteProgram(oldProgram);
         }
-        
+
         var vertexShader = this._vertexShaderPort.value();
         var fragmentShader = this._fragmentShaderPort.value();        
         if (vertexShader && fragmentShader) {
@@ -65,6 +72,7 @@ class ProgramNode implements Node {
                 this._programPort.setValue(program);
             }
             else {
+                // should use custom logger
                 console.log("Program Failed to Link:", gl.getProgramInfoLog(program));
                 gl.deleteProgram(program);
             }

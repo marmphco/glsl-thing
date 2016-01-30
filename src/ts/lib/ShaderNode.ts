@@ -18,6 +18,13 @@ class ShaderNode implements Node {
         this._type = type; // needs validity check
     }
 
+    delete() {
+        const oldShader = this._shaderPort.value();
+        if (oldShader) {
+            this._gl.deleteShader(oldShader);
+        }
+    }
+
     shaderPort() {
         return this._shaderPort;
     }
