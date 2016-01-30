@@ -11,3 +11,15 @@ export function map<T, U>(table: Table<T>, mapper: (value: T, key: string) => U)
 
     return newTable;
 }
+
+export function merge<T>(...tables: Table<T>[]): Table<T> {
+    var merged = {};
+
+    tables.forEach((table) => {
+        for (const key in table) {
+            merged[key] = table[key];
+        }
+    });
+
+    return merged;
+}
