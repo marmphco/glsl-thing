@@ -5,7 +5,7 @@ import table = require("./table");
 import Table = table.Table;
 import {MeshAttributes, Mesh} from './Mesh';
 
-class MeshNode implements Node {
+export class MeshNode implements Node {
 
     private _gl: WebGLRenderingContext;
     private _meshPort: OutputPort<Mesh>;
@@ -49,5 +49,3 @@ class MeshNode implements Node {
 
     }
 }
-
-export = MeshNode;

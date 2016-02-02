@@ -7,6 +7,10 @@ export interface MeshAttributes {
     offset: number;
 }
 
+export interface MeshAttributeBinder {
+    (attributeLoc: number): void;
+}
+
 export class Mesh {
 
     private _gl: WebGLRenderingContext;
@@ -19,26 +23,36 @@ export class Mesh {
     constructor(gl: WebGLRenderingContext,
                 drawMode: number,
                 elementArrayName: string,
-                attributeArrays: Table<number[]>,
+                arrays: Table<number[]>,
                 attributes: Table<MeshAttributes>) {
 
         this._gl = gl;
         this._drawMode = drawMode;
-        this._elementCount = attributeArrays[elementArrayName].length;
+        this._elementCount = arrays[elementArrayName].length;
         this._elementArrayName = elementArrayName;
         this._attributes = attributes;
         this._buffers = {};
 
+        // Setup attribute buffers
         for (const attributeName in attributes) {
-            const attribute = attributes[attributeName];
-            const attributeData = new Float32Array(attributeArrays[attributeName]);
+            if (attributeName != elementArrayName) {
+                const attribute = attributes[attributeName];
+                const attributeData = new Float32Array(arrays[attributeName]);
 
-            const buffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-            gl.bufferData(gl.ARRAY_BUFFER, attributeData, gl.STATIC_DRAW);
+                const buffer = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+                gl.bufferData(gl.ARRAY_BUFFER, attributeData, gl.STATIC_DRAW);
 
-            this._buffers[attributeName] = buffer;
+                this._buffers[attributeName] = buffer;
+            }
         }
+
+        // Setup element array buffer
+        const elementArray = arrays[elementArrayName];
+        const elementBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, elementBuffer);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(elementArray), gl.STATIC_DRAW);
+        this._buffers[elementArrayName] = elementBuffer;
     }
 
     delete() {
@@ -51,7 +65,7 @@ export class Mesh {
         return Object.keys(this._attributes);
     }
 
-    attributeBindingFunction(attributeName: string): (attributeLoc: number) => void {
+    attributeBindingFunction(attributeName: string): MeshAttributeBinder {
         var gl = this._gl;
         var buffer = this._buffers[attributeName];
         var attribute = this._attributes[attributeName];
