@@ -19,7 +19,11 @@ describe("RenderGraph", function() {
                 "floatOutput": PortType.Float
             }
         },
-        evaluate: (inputs: Table<any>) => { return {} }
+        evaluate: (inputs: Table<any>) => { 
+            return {
+                "floatOutput": inputs["floatInput"] * 3
+            } 
+        }
     };
 
     const gerpNode: Node = {
@@ -33,7 +37,25 @@ describe("RenderGraph", function() {
                 "stringOutput": PortType.String
             }
         },
-        evaluate: (inputs: Table<any>) => { return {} }
+        evaluate: (inputs: Table<any>) => { 
+            return {
+                "stringOutput": (inputs["floatInput"] + 1).toString()
+            } 
+        }
+    };
+
+    const constNode: Node = {
+        inputPorts: () => { return {} },
+        outputPorts: () => {
+            return {
+                "constant": PortType.Float
+            }
+        },
+        evaluate: (inputs: Table<any>) => {
+            return {
+                "constant": 7
+            };
+        }
     };
 
     var graph: RenderGraph;
@@ -172,7 +194,37 @@ describe("RenderGraph", function() {
         fail("not implemented");
     });
 
-    it("should evaluate correctly", () => {
+    it("does not allow bindings that result in cycles", () => {
         fail("not implemented");
+    });
+
+    it("should evaluate correctly", () => {
+        const constID = graph.addNode(constNode);
+        const dummyID = graph.addNode(dummyNode);
+        const gerpID = graph.addNode(gerpNode);
+
+        graph.bind({
+            sender: { node: constID, port: "constant" },
+            receiver: { node: dummyID, port: "floatInput" }
+        });
+
+        graph.bind({
+            sender: { node: dummyID, port: "floatOutput" },
+            receiver: { node: gerpID, port: "floatInput" }
+        });
+
+        graph.evaluateSubgraphAtNodeWithID(constID);
+
+        // 7
+        const constOutputs = graph.outputsForNodeWithID(constID);
+        expect(constOutputs["constant"]).toEqual(7);
+
+        // 7 * 3 => 21
+        const dummyOutputs = graph.outputsForNodeWithID(dummyID);
+        expect(dummyOutputs["floatOutput"]).toEqual(21);
+
+        // (21 + 1).toString() => "22"
+        const gerpOutputs = graph.outputsForNodeWithID(gerpID);
+        expect(gerpOutputs["stringOutput"]).toEqual("22");
     });
 });

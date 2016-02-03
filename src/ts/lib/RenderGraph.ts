@@ -15,6 +15,7 @@ export interface Binding {
     receiver: Port;
 }
 
+// TODO break this out into it's own class
 interface BindingTable {
     // each input port can have exactly one sender
     inputBindings: Table<Port>;
@@ -31,14 +32,14 @@ export default class RenderGraph {
     // one table entry per port binding
     private _bindings: BindingTable[];
 
-    private _inputCache: any[];
+    private _outputs: Table<any>[];
 
     private _freeIndices: NodeID[];
 
     constructor() {
         this._nodes = [];
         this._bindings = [];
-        this._inputCache = [];
+        this._outputs = [];
         this._freeIndices = [];
     }
 
@@ -67,6 +68,10 @@ export default class RenderGraph {
         }, []);
     }
 
+    outputsForNodeWithID(nodeID: NodeID): Table<any> {
+        return this._outputs[nodeID];
+    }
+
     addNode(node: Node): NodeID {
         assertHasValue(node);
 
@@ -85,6 +90,9 @@ export default class RenderGraph {
             inputBindings: {},
             outputBindings: {}
         };
+
+        this._outputs[nodeID] = {};
+
         return nodeID;
     }
 
@@ -114,6 +122,10 @@ export default class RenderGraph {
 
         // release this node's bindings
         this._bindings[nodeID] = null;
+
+        // release this node's outputs
+        // TODO needs code to free resources if they're like GL textures or something
+        this._outputs[nodeID] = null;
 
         // release node
         this._nodes[nodeID] = null;
@@ -153,6 +165,41 @@ export default class RenderGraph {
         // Remove from receiving node binding table
         const bindingsForReceivingNode = this._bindings[binding.receiver.node];
         delete bindingsForReceivingNode.inputBindings[binding.receiver.port];
+    }
+
+    evaluateNodeWithID(nodeID: NodeID) {
+        const node = this._nodes[nodeID];
+        assertHasValue(node);
+
+        // assemble node inputs
+        // TODO break input assembly out into its own function
+        var inputs: Table<any> = {};
+        for (const port in this._bindings[nodeID].inputBindings) {
+            const sender = this._bindings[nodeID].inputBindings[port];
+            inputs[port] = this._outputs[sender.node][sender.port];
+        }
+
+        // TODO: must collect and destroy old output values first
+        // TODO: use outputs to determine which nodes should be evaluated next
+        // TODO: put this in evaluateSubgraphAtNodeWithID
+        this._outputs[nodeID] = node.evaluate(inputs);
+        console.log("evaluated node: ", inputs, " => ", this._outputs[nodeID])
+    }
+
+    evaluateSubgraphAtNodeWithID(nodeID: NodeID) {
+        assertHasValue(this._nodes[nodeID]);
+
+        // evaluate the starting node
+        this.evaluateNodeWithID(nodeID);
+
+        // evaluate the node's receivers
+        // TODO should only evaluate nodes that received a new value
+        for (const port in this._bindings[nodeID].outputBindings) {
+            const receivers = this._bindings[nodeID].outputBindings[port];
+            receivers.forEach((receiver) => {
+                this.evaluateSubgraphAtNodeWithID(receiver.node);
+            });
+        }
     }
 
     private _validateBinding(binding: Binding) {
