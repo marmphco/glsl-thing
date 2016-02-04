@@ -1,20 +1,32 @@
+import PortType = require( "../lib/PortType");
+import RenderGraph from "../lib/RenderGraph";
 import ShaderNode = require("../lib/ShaderNode");
 import ProgramNode = require("../lib/ProgramNode");
-import RenderNode = require("../lib/RenderNode");
-import {MeshNode} from "../lib/MeshNode";
-import {Square} from "../lib/Primitive";
+//import RenderNode = require("../lib/RenderNode");
+//import {MeshNode} from "../lib/MeshNode";
+//import {Square} from "../lib/Primitive";
 
 export = function(gl: WebGLRenderingContext, container: HTMLElement) {
-    // nodes should be initialized with an evaluation queue
-    var vertexNode = new ShaderNode(gl, gl.VERTEX_SHADER);
-    var fragmentNode = new ShaderNode(gl, gl.FRAGMENT_SHADER);
-    var programNode = new ProgramNode(gl);
 
-    programNode.vertexShaderPort().setProvider(vertexNode.shaderPort());
-    vertexNode.shaderPort().addSink(programNode.vertexShaderPort());
+    var graph = new RenderGraph();
 
-    programNode.fragmentShaderPort().setProvider(fragmentNode.shaderPort());
-    fragmentNode.shaderPort().addSink(programNode.fragmentShaderPort());
+    const vertexNode = new ShaderNode(gl, PortType.VertexShader);
+    const fragmentNode = new ShaderNode(gl, PortType.FragmentShader);
+    const programNode = new ProgramNode(gl);
+
+    const vertexNodeID = graph.addNode(vertexNode);
+    const fragmentNodeID = graph.addNode(fragmentNode);
+    const programID = graph.addNode(programNode);
+
+    graph.bind({
+        sender: { node: vertexNodeID, port: "shader" },
+        receiver: { node: programID, port: "vertexShader" }
+    });
+
+    graph.bind({
+        sender: { node: fragmentNodeID, port: "shader" },
+        receiver: { node: programID, port: "fragmentShader" }
+    });
 
     vertexNode.setShaderSource("\
         attribute lowp vec4 aPosition;\
@@ -23,23 +35,14 @@ export = function(gl: WebGLRenderingContext, container: HTMLElement) {
             gl_Position = aPosition;\
         }");
 
+    graph.evaluateSubgraphAtNodeWithID(vertexNodeID);
+
     fragmentNode.setShaderSource("\
         void main() {\
             gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);\
         }");
 
-    var meshNode = new MeshNode(gl, Square(gl));
-
-    var renderNode = new RenderNode(gl);
-
-    renderNode.meshPort().setProvider(meshNode.meshPort());
-    meshNode.meshPort().addSink(renderNode.meshPort());
-
-    renderNode.programPort().setProvider(programNode.programPort());
-    programNode.programPort().addSink(renderNode.programPort());
-
-    console.log(renderNode.inputPorts());
-
+    graph.evaluateSubgraphAtNodeWithID(fragmentNodeID);
 
     var node = document.createElement("p");
     node.innerHTML = "fsdaffdsa";

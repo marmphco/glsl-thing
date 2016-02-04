@@ -1,66 +1,43 @@
+import {assert} from "./Assert";
 import Node = require("./Node");
-import OutputPort = require("./OutputPort");
-import InputPort = require("./InputPort");
+import PortType = require("./PortType");
 import table = require("./table");
 import Table = table.Table;
 
 class ProgramNode implements Node {
-
-    private _vertexShaderPort: InputPort<WebGLShader>;
-    private _fragmentShaderPort: InputPort<WebGLShader>;
-    private _programPort: OutputPort<WebGLProgram>;
     private _gl: WebGLRenderingContext;
 
     constructor(gl: WebGLRenderingContext) {
-        this._vertexShaderPort = new InputPort(this);
-        this._fragmentShaderPort = new InputPort(this);
-        this._programPort = new OutputPort();
         this._gl = gl;
     }
 
-    delete() {
-        const oldProgram = this._programPort.value();
-        if (oldProgram) {
-            this._gl.deleteProgram(oldProgram);
+//     delete() {
+//         const oldProgram = this._programPort.value();
+//         if (oldProgram) {
+//             this._gl.deleteProgram(oldProgram);
+//         }
+//     }
+    
+    inputPorts(): Table<PortType> {
+        return {
+            "vertexShader": PortType.VertexShader,
+            "fragmentShader": PortType.FragmentShader
         }
     }
 
-    vertexShaderPort() {
-        return this._vertexShaderPort;
-    }
-
-    fragmentShaderPort() {
-        return this._fragmentShaderPort;
-    }
-
-    programPort() {
-        return this._programPort;
-    }
-
-    inputPorts(): Table<InputPort<any>> {
+    outputPorts(): Table<PortType> {
         return {
-            "Vertex Shader": this._vertexShaderPort,
-            "Fragment Shader": this._fragmentShaderPort
-        };
-    }
-
-    outputPorts(): Table<OutputPort<any>> {
-        return {
-            "Program": this._programPort
+            "program": PortType.ShaderProgram
         }
     }
 
-    pushValue(value: any = null) {
+    evaluate(inputs: Table<any>): Table<any> {
+        assert("vertexShader" in inputs);
+        assert("fragmentShader" in inputs);
         const gl = this._gl;
 
-        // delete previous program if it exists
-        const oldProgram = this._programPort.value();
-        if (oldProgram) {
-            gl.deleteProgram(oldProgram);
-        }
-
-        var vertexShader = this._vertexShaderPort.value();
-        var fragmentShader = this._fragmentShaderPort.value();        
+        var vertexShader = inputs["vertexShader"];
+        var fragmentShader = inputs["fragmentShader"];        
         if (vertexShader && fragmentShader) {
             var program = gl.createProgram();
             gl.attachShader(program, vertexShader);
@@ -69,18 +46,17 @@ class ProgramNode implements Node {
 
             if (gl.getProgramParameter(program, gl.LINK_STATUS)) {
                 console.log("Program Linked Successfully");
-                this._programPort.setValue(program);
+                return {
+                    "program": program
+                };
             }
             else {
                 // should use custom logger
                 console.log("Program Failed to Link:", gl.getProgramInfoLog(program));
                 gl.deleteProgram(program);
+                return {};
             }
         }
-    }
-
-    toJSON(): any {
-
     }
 }
 

@@ -225,10 +225,10 @@ export default class RenderGraph {
     }
 
     private _isAncestor(node: NodeID, ancestor: NodeID): boolean {
-        const parents = table.mapToArray(this._bindings[node].inputBindings, (parentNode) {
+        const parents = table.mapToArray(this._bindings[node].inputBindings, (parentNode) => {
             return parentNode.node;
         });
-        return table.mapToArray(this._bindings[node].inputBindings, (parentNode) {
+        return table.mapToArray(this._bindings[node].inputBindings, (parentNode) => {
             return parentNode.node == ancestor || this._isAncestor(parentNode.node, ancestor);
         }).reduce((result, item) => {
             return result || item;
