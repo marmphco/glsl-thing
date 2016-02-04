@@ -11,7 +11,8 @@ describe("RenderGraph", function() {
     const dummyNode: Node = {
         inputPorts: () => {
             return {
-                "floatInput": PortType.Float
+                "floatInput": PortType.Float,
+                "otherFloatInput": PortType.Float
             }
         },
         outputPorts: () => {
@@ -191,12 +192,47 @@ describe("RenderGraph", function() {
     })
 
     it("does not allow binding of mismatched types", () => {
-        fail("not implemented");
+
+        const dummyID = graph.addNode(dummyNode);
+        const gerpID = graph.addNode(gerpNode);
+
+        expect(() => {
+            graph.bind({
+                sender: { node: gerpID, port: "stringOutput" },
+                receiver: { node: dummyID, port: "floatInput" }
+            });
+        }).toThrowError();
+
     });
 
     it("does not allow bindings that result in cycles", () => {
-        fail("not implemented");
+
+        const node1 = graph.addNode(dummyNode);
+        const node2 = graph.addNode(dummyNode);
+        const node3 = graph.addNode(dummyNode);
+
+        graph.bind({
+            sender: { node: node1, port: "floatOutput" },
+            receiver: { node: node2, port: "floatInput" }
+        });
+
+        graph.bind({
+            sender: { node: node2, port: "floatOutput" },
+            receiver: { node: node3, port: "otherFloatInput" }
+        });
+
+        expect(() => {
+            graph.bind({
+                sender: { node: node3, port: "floatOutput" },
+                receiver: { node: node1, port: "otherFloatInput" }
+            });
+        }).toThrowError();
+
     });
+
+    it("does not allow re-binding of an already bound port", () => {
+        fail("not implemented");
+    })
 
     it("should evaluate correctly", () => {
         const constID = graph.addNode(constNode);
