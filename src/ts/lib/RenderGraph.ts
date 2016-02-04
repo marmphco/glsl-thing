@@ -183,7 +183,6 @@ export default class RenderGraph {
         // TODO: use outputs to determine which nodes should be evaluated next
         // TODO: put this in evaluateSubgraphAtNodeWithID
         this._outputs[nodeID] = node.evaluate(inputs);
-        console.log("evaluated node: ", inputs, " => ", this._outputs[nodeID])
     }
 
     evaluateSubgraphAtNodeWithID(nodeID: NodeID) {
@@ -206,11 +205,34 @@ export default class RenderGraph {
         const sendingNode = this._nodes[binding.sender.node];
         const receivingNode = this._nodes[binding.receiver.node];
 
+        // Nodes must exist
         assertHasValue(sendingNode);
         assertHasValue(receivingNode);
 
-        assert(binding.sender.port in sendingNode.outputPorts());
-        assert(binding.receiver.port in receivingNode.inputPorts());
+        const senderOutputPorts = sendingNode.outputPorts();
+        const receiverInputPorts = receivingNode.inputPorts();
+
+        // Ports must exist
+        assert(binding.sender.port in senderOutputPorts);
+        assert(binding.receiver.port in receiverInputPorts);
+
+        // Port types must match
+        assert(senderOutputPorts[binding.sender.port] == receiverInputPorts[binding.receiver.port]);
+
+        // Check for cycles
+
+        assert(!this._isAncestor(binding.sender.node, binding.receiver.node));
+    }
+
+    private _isAncestor(node: NodeID, ancestor: NodeID): boolean {
+        const parents = table.mapToArray(this._bindings[node].inputBindings, (parentNode) {
+            return parentNode.node;
+        });
+        return table.mapToArray(this._bindings[node].inputBindings, (parentNode) {
+            return parentNode.node == ancestor || this._isAncestor(parentNode.node, ancestor);
+        }).reduce((result, item) => {
+            return result || item;
+        }, false);
     }
 
     private _filterPort(ports: Port[], portToRemove: Port): Port[] {

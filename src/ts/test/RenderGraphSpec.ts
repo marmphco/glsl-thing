@@ -202,7 +202,6 @@ describe("RenderGraph", function() {
                 receiver: { node: dummyID, port: "floatInput" }
             });
         }).toThrowError();
-
     });
 
     it("does not allow bindings that result in cycles", () => {
@@ -227,7 +226,6 @@ describe("RenderGraph", function() {
                 receiver: { node: node1, port: "otherFloatInput" }
             });
         }).toThrowError();
-
     });
 
     it("does not allow re-binding of an already bound port", () => {
