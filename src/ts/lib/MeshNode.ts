@@ -1,51 +1,101 @@
+import {assert} from "./Assert";
 import Node = require("./Node");
-import OutputPort = require("./OutputPort");
-import InputPort = require("./InputPort");
+import {BaseType, PortType} from "./PortType";
 import table = require("./table");
 import Table = table.Table;
 import {MeshAttributes, Mesh} from './Mesh';
 
-export class MeshNode implements Node {
+// class MeshNode implements Node {
 
-    private _gl: WebGLRenderingContext;
-    private _meshPort: OutputPort<Mesh>;
-    private _outputPorts: Table<OutputPort<any>>;
+//     private _gl: WebGLRenderingContext;
+//     private _ports: Table<PortType>;
 
-    constructor(gl: WebGLRenderingContext, mesh: Mesh) {
+//     private _mesh: Mesh;
 
-        this._gl = gl;
-        this._outputPorts = {};
+//     constructor(gl: WebGLRenderingContext, mesh: Mesh) {
+//         this._gl = gl;
+//         this._mesh = mesh;
+//         this._ports = {
+//             "mesh": BaseType.Mesh
+//         };
 
-        this._meshPort = new OutputPort<Mesh>();
-        this._meshPort.setValue(mesh);
+//         mesh.attributeNames().forEach((attributeName) => {
 
-        this._outputPorts["mesh"] = this._meshPort;
+//             this._ports[attributeName] = 
 
-        mesh.attributeNames().forEach((attributeName) => {
-            var port = new OutputPort<any>();
-            port.setValue(mesh.attributeBindingFunction(attributeName));
+//             var port = new OutputPort<any>();
+//             port.setValue(mesh.attributeBindingFunction(attributeName));
 
-            this._outputPorts['attr:' + attributeName] = port;
-        });
-    }
+//             this._attributePorts['attr:' + attributeName] = port;
+//         });
+//     }
 
-    meshPort(): OutputPort<Mesh> {
-        return this._meshPort;
-    }
+//     inputPorts(): Table<PortType> {
+//         return {};
+//     }
 
-    inputPorts(): Table<InputPort<any>> {
-        return {};
-    }
+//     outputPorts(): Table<PortType> {
+//         const defaultPorts: Table<PortType> = {
+//             "mesh": PortType.Mesh
+//         };
 
-    outputPorts(): Table<OutputPort<any>> {
-        return this._outputPorts;
-    }
+//         return table.merge(defaultPorts, this._attributePorts);
+//     }
 
-    pushValue(value: any = null) {
+//     evaluate(inputs: Table<any>): Table<any> {
+//         mesh.attributeNames().forEach((attributeName) => {
+//             var port = new OutputPort<any>();
+//             port.setValue(mesh.attributeBindingFunction(attributeName));
+
+//             this._attributePorts['attr:' + attributeName] = port;
+//         });
+//         return attributes;
+//     }
+// }
+
+// export = MeshNode;
+
+// export class MeshNode implements Node {
+
+//     private _gl: WebGLRenderingContext;
+//     private _meshPort: OutputPort<Mesh>;
+//     private _outputPorts: Table<OutputPort<any>>;
+
+//     constructor(gl: WebGLRenderingContext, mesh: Mesh) {
+
+//         this._gl = gl;
+//         this._outputPorts = {};
+
+//         this._meshPort = new OutputPort<Mesh>();
+//         this._meshPort.setValue(mesh);
+
+//         this._outputPorts["mesh"] = this._meshPort;
+
+//         mesh.attributeNames().forEach((attributeName) => {
+//             var port = new OutputPort<any>();
+//             port.setValue(mesh.attributeBindingFunction(attributeName));
+
+//             this._outputPorts['attr:' + attributeName] = port;
+//         });
+//     }
+
+//     meshPort(): OutputPort<Mesh> {
+//         return this._meshPort;
+//     }
+
+//     inputPorts(): Table<InputPort<any>> {
+//         return {};
+//     }
+
+//     outputPorts(): Table<OutputPort<any>> {
+//         return this._outputPorts;
+//     }
+
+//     pushValue(value: any = null) {
         
-    }
+//     }
 
-    toJSON(): any {
+//     toJSON(): any {
 
-    }
-}
+//     }
+// }

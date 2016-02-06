@@ -1,4 +1,4 @@
-import PortType = require("./PortType");
+import {PortType} from "./PortType";
 import table = require("./table");
 import Table = table.Table;
 

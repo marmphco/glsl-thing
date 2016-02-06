@@ -1,4 +1,5 @@
 import {assert, assertHasValue} from "./Assert";
+import {typesAreCompatible} from "./Porttype";
 import Node = require("./Node");
 import table = require("./Table");
 import Table = table.Table;
@@ -217,7 +218,9 @@ export default class RenderGraph {
         assert(binding.receiver.port in receiverInputPorts);
 
         // Port types must match
-        assert(senderOutputPorts[binding.sender.port] == receiverInputPorts[binding.receiver.port]);
+        const senderType = senderOutputPorts[binding.sender.port];
+        const receiverType = receiverInputPorts[binding.receiver.port];
+        assert(typesAreCompatible(senderType, receiverType));
 
         // Check for cycles
 

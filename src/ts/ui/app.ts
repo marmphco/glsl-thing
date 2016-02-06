@@ -1,4 +1,4 @@
-import PortType = require( "../lib/PortType");
+import {PortType, BaseType} from "../lib/PortType";
 import RenderGraph from "../lib/RenderGraph";
 import ShaderNode = require("../lib/ShaderNode");
 import ProgramNode = require("../lib/ProgramNode");
@@ -10,8 +10,8 @@ export = function(gl: WebGLRenderingContext, container: HTMLElement) {
 
     var graph = new RenderGraph();
 
-    const vertexNode = new ShaderNode(gl, PortType.VertexShader);
-    const fragmentNode = new ShaderNode(gl, PortType.FragmentShader);
+    const vertexNode = new ShaderNode(gl, BaseType.VertexShader);
+    const fragmentNode = new ShaderNode(gl, BaseType.FragmentShader);
     const programNode = new ProgramNode(gl);
 
     const vertexNodeID = graph.addNode(vertexNode);

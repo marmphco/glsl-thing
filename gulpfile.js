@@ -58,6 +58,8 @@ gulp.task('build-ui', function() {
         extension: '.js'
     }))
     .pipe(tsc({
+        noEmitOnError: true,
+        noImplicitAny: true,
         module: 'commonjs'
     }))
     .pipe(gulp.dest('build/ui'));
@@ -71,6 +73,8 @@ gulp.task('build-lib', function() {
         extension: '.js'
     }))
     .pipe(tsc({
+        noEmitOnError: true,
+        noImplicitAny: true,
         module: 'commonjs'
     }))
     .pipe(gulp.dest('build/lib'));
@@ -88,6 +92,8 @@ gulp.task('build-tests', function() {
         extension: '.js'
     }))
     .pipe(tsc({
+        noEmitOnError: true,
+        noImplicitAny: true,
         module: 'commonjs',
     }))
     .pipe(gulp.dest('build/spec'));

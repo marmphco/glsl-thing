@@ -1,6 +1,6 @@
 import {assert} from "./Assert";
 import Node = require("./Node");
-import PortType = require("./PortType");
+import {BaseType} from "./PortType";
 import table = require("./table");
 import Table = table.Table;
 
@@ -18,16 +18,16 @@ class ProgramNode implements Node {
 //         }
 //     }
     
-    inputPorts(): Table<PortType> {
+    inputPorts(): Table<BaseType> {
         return {
-            "vertexShader": PortType.VertexShader,
-            "fragmentShader": PortType.FragmentShader
+            "vertexShader": BaseType.VertexShader,
+            "fragmentShader": BaseType.FragmentShader
         }
     }
 
-    outputPorts(): Table<PortType> {
+    outputPorts(): Table<BaseType> {
         return {
-            "program": PortType.ShaderProgram
+            "program": BaseType.ShaderProgram
         }
     }
 
@@ -46,6 +46,7 @@ class ProgramNode implements Node {
 
             if (gl.getProgramParameter(program, gl.LINK_STATUS)) {
                 console.log("Program Linked Successfully");
+
                 return {
                     "program": program
                 };

@@ -2,7 +2,7 @@
 
 import Node = require("../lib/Node");
 import RenderGraph from "../lib/RenderGraph";
-import PortType = require("../lib/PortType");
+import {BaseType} from "../lib/PortType";
 import table = require("../lib/table");
 import Table = table.Table;
 
@@ -11,13 +11,13 @@ describe("RenderGraph", function() {
     const dummyNode: Node = {
         inputPorts: () => {
             return {
-                "floatInput": PortType.Float,
-                "otherFloatInput": PortType.Float
+                "floatInput": BaseType.Float,
+                "otherFloatInput": BaseType.Float
             }
         },
         outputPorts: () => {
             return {
-                "floatOutput": PortType.Float
+                "floatOutput": BaseType.Float
             }
         },
         evaluate: (inputs: Table<any>) => { 
@@ -30,12 +30,12 @@ describe("RenderGraph", function() {
     const gerpNode: Node = {
         inputPorts: () => {
             return {
-                "floatInput": PortType.Float
+                "floatInput": BaseType.Float
             }
         },
         outputPorts: () => {
             return {
-                "stringOutput": PortType.String
+                "stringOutput": BaseType.String
             }
         },
         evaluate: (inputs: Table<any>) => { 
@@ -49,7 +49,7 @@ describe("RenderGraph", function() {
         inputPorts: () => { return {} },
         outputPorts: () => {
             return {
-                "constant": PortType.Float
+                "constant": BaseType.Float
             }
         },
         evaluate: (inputs: Table<any>) => {

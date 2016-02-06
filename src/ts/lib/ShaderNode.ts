@@ -1,5 +1,5 @@
 import Node = require("./Node");
-import PortType = require("./PortType");
+import {BaseType} from "./PortType";
 import {assert} from "./Assert";
 import table = require("./table");
 import Table = table.Table;
@@ -7,12 +7,12 @@ import Table = table.Table;
 class ShaderNode implements Node {
 
     private _gl: WebGLRenderingContext;
-    private _type: PortType;
+    private _type: BaseType;
 
     private _shaderSource: string;
 
-    constructor(gl: WebGLRenderingContext, type: PortType) {
-        assert(type === PortType.VertexShader || type === PortType.FragmentShader);
+    constructor(gl: WebGLRenderingContext, type: BaseType) {
+        assert(type === BaseType.VertexShader || type === BaseType.FragmentShader);
 
         this._gl = gl;
         this._type = type;
@@ -33,11 +33,11 @@ class ShaderNode implements Node {
         return this._shaderSource;
     }
 
-    inputPorts(): Table<PortType> {
+    inputPorts(): Table<BaseType> {
         return {};
     }
 
-    outputPorts(): Table<PortType> {
+    outputPorts(): Table<BaseType> {
         return {
             "shader": this._type
         }
@@ -47,7 +47,7 @@ class ShaderNode implements Node {
         const gl = this._gl;
 
         // compile the shader
-        const glType = this._type == PortType.VertexShader ?
+        const glType = this._type == BaseType.VertexShader ?
             gl.VERTEX_SHADER : gl.FRAGMENT_SHADER;
 
         var shader = gl.createShader(glType);
